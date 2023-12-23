@@ -22,7 +22,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 // Modelos
    Model sphere;
    Model plane;
-   Model cube;
+   Model jet;
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
@@ -33,9 +33,13 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture imgCubeDiffuse;
    Texture imgCubeSpecular;
    Texture imgWindow;
-   Texture imgWallDiffuse;
-   Texture imgWallSpecular;
-   Texture imgWallNormal;
+   Texture asphaltDiffuse;
+   Texture asphaltSpecular;
+   Texture asphaltNormal;
+   Texture cammo;
+   Texture trackDiffuse;
+   Texture trackSpecular;
+   Texture trackNormal;
 
 // Luces y materiales
    #define   NLD 1
@@ -54,7 +58,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texChess;
    Textures  texCube;
    Textures  texWindow;
-   Textures  texWall;
+   Textures  texAsphalt;
+   Textures  texCammo;
+   Textures  texTrack;
 
 // Viewport
    int w = 500;
@@ -134,7 +140,7 @@ void configScene() {
  // Modelos
     sphere.initModel("resources/models/sphere.obj");
     plane.initModel("resources/models/plane.obj");
-    cube.initModel("resources/models/cube.obj");
+    jet.initModel("resources/models/jet.obj");
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
@@ -145,9 +151,13 @@ void configScene() {
     imgCubeDiffuse.initTexture("resources/textures/imgCubeDiffuse.png");
     imgCubeSpecular.initTexture("resources/textures/imgCubeSpecular.png");
     imgWindow.initTexture("resources/textures/imgWindow.png");
-    imgWallDiffuse.initTexture("resources/textures/imgWallDiffuse.png");
-    imgWallSpecular.initTexture("resources/textures/imgWallSpecular.png");
-    imgWallNormal.initTexture("resources/textures/imgWallNormal.png");
+    asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
+    asphaltSpecular.initTexture("resources/textures/asphaltSpecular.png");
+    asphaltNormal.initTexture("resources/textures/asphaltNormal.png");
+    cammo.initTexture("resources/textures/cammo.jpg");
+    trackDiffuse.initTexture("resources/textures/trackDiffuse.jpg");
+    trackSpecular.initTexture("resources/textures/trackSpecular.jpg");
+    trackNormal.initTexture("resources/textures/trackNormal.jpg");
 
  // Luz ambiental global
     lightG.ambient = glm::vec3(0.5, 0.5, 0.5);
@@ -244,11 +254,23 @@ void configScene() {
     texWindow.normal    = 0;
     texWindow.shininess = 10.0;
 
-    texWall.diffuse    = imgWallDiffuse.getTexture();
-    texWall.specular   = imgWallSpecular.getTexture();
-    texWall.emissive   = imgNoEmissive.getTexture();
-    texWall.normal     = imgWallNormal.getTexture();
-    texWall.shininess  = 51.2;
+    texAsphalt.diffuse    = asphaltDiffuse.getTexture();
+    texAsphalt.specular   = asphaltSpecular.getTexture();
+    texAsphalt.emissive   = imgNoEmissive.getTexture();
+    texAsphalt.normal     = asphaltNormal.getTexture();
+    texAsphalt.shininess  = 51.2;
+
+    texCammo.diffuse    = cammo.getTexture();
+    texCammo.specular   = cammo.getTexture();
+    texCammo.emissive   = imgNoEmissive.getTexture();
+    texCammo.normal     = 0;
+    texCammo.shininess  = 51.2;
+
+    texTrack.diffuse    = trackDiffuse.getTexture();
+    texTrack.specular   = trackSpecular.getTexture();
+    texTrack.emissive   = imgNoEmissive.getTexture();
+    texTrack.normal     = trackNormal.getTexture();
+    texTrack.shininess  = 51.2;
 
 }
 
@@ -281,14 +303,17 @@ void renderScene() {
     setLights(P,V);
 
  // Dibujamos la escena
-    glm::mat4 S = glm::scale    (I, glm::vec3(4.0, 1.0, 4.0));
-    glm::mat4 T = glm::translate(I, glm::vec3(0.0,-3.0, 0.0));
-    drawObjectTex(plane, texWall, P, V, T * S);
+    glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
+    glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 12.0));
+    glm::mat4 TTrack = glm::translate(I, glm::vec3(-8.0, 0.0, 0.0));
+    drawObjectTex(plane, texAsphalt, P, V, SAsphalt);
+    drawObjectTex(plane, texTrack, P, V, TTrack * SAsphalt * Ry90);
 
+    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.02, 0.02, 0.02));
     glm::mat4 Ry = glm::rotate   (I, glm::radians(rotY), glm::vec3(0,1,0));
     glm::mat4 Rx = glm::rotate   (I, glm::radians(rotX), glm::vec3(1,0,0));
     glm::mat4 Tz = glm::translate(I, glm::vec3(0.0, 0.0, desZ));
-    drawObjectTex(cube, texCube, P, V, Tz * Rx * Ry);
+    drawObjectTex(jet, texCammo, P, V, Tz * Rx * Ry * SJet);
 
     glm::mat4 Rv = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Tv = glm::translate(I, glm::vec3(0.0, 0.0, 3.0));
@@ -299,7 +324,6 @@ void renderScene() {
 }
 
 void setLights(glm::mat4 P, glm::mat4 V) {
-
     shaders.setLight("ulightG",lightG);
     for(int i=0; i<NLD; i++) shaders.setLight("ulightD["+toString(i)+"]",lightD[i]);
     for(int i=0; i<NLP; i++) shaders.setLight("ulightP["+toString(i)+"]",lightP[i]);
