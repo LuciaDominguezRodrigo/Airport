@@ -30,14 +30,26 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
+
    Texture imgWindow;
+
    Texture asphaltDiffuse;
    Texture asphaltSpecular;
    Texture asphaltNormal;
+
    Texture cammo;
+
    Texture trackDiffuse;
    Texture trackSpecular;
    Texture trackNormal;
+
+   Texture floorDiffuse;
+   Texture floorSpecular;
+   Texture floorNormal;
+
+   Texture grassDiffuse;
+   Texture grassSpecular;
+   Texture grassNormal;
 
 // Luces y materiales
    #define   NLD 1
@@ -52,6 +64,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texAsphalt;
    Textures  texCammo;
    Textures  texTrack;
+   Textures  texFloor;
+   Textures  texGrass;
 
 // Viewport
    int w = 500;
@@ -148,6 +162,15 @@ void configScene() {
     trackSpecular.initTexture("resources/textures/trackSpecular.jpg");
     trackNormal.initTexture("resources/textures/trackNormal.jpg");
 
+    floorDiffuse.initTexture("resources/textures/sueloTerminalDifusa.jpg");
+    floorSpecular.initTexture("resources/textures/sueloTerminalEspecular.jpg");
+    floorNormal.initTexture("resources/textures/sueloTerminalNormal.jpg");
+
+    grassDiffuse.initTexture("resources/textures/cespedDifusa.jpg");
+    grassSpecular.initTexture("resources/textures/cespedEspecular.jpg");
+    grassNormal.initTexture("resources/textures/cespedNormal.jpg");
+
+
  // Luz ambiental global
     lightG.ambient = glm::vec3(0.5, 0.5, 0.5);
 
@@ -219,6 +242,18 @@ void configScene() {
     texTrack.normal     = trackNormal.getTexture();
     texTrack.shininess  = 51.2;
 
+    texFloor.diffuse    = floorDiffuse.getTexture();
+    texFloor.specular   = floorSpecular.getTexture();
+    texFloor.emissive   = imgNoEmissive.getTexture();
+    texFloor.normal     = floorNormal.getTexture();
+    texFloor.shininess  = 51.2;
+
+    texGrass.diffuse    = grassDiffuse.getTexture();
+    texGrass.specular   = grassSpecular.getTexture();
+    texGrass.emissive   = imgNoEmissive.getTexture();
+    texGrass.normal     = grassNormal.getTexture();
+    texGrass.shininess  = 51.2;
+
 }
 
 void renderScene() {
@@ -232,7 +267,7 @@ void renderScene() {
 
  // Matriz P
     float nplane =  0.1;
-    float fplane = 25.0;
+    float fplane = 30.0;
     float aspect = (float)w/(float)h;
     glm::mat4 P = glm::perspective(glm::radians(fovy), aspect, nplane, fplane);
 
@@ -261,18 +296,35 @@ void renderScene() {
 
 
 void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
-    glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 12.0));
-    glm::mat4 TTrack = glm::translate(I, glm::vec3(-8.0, 0.0, 0.0));
-    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-16.0, 0.0, 4.0));
-    glm::mat4 STerminal = glm::scale    (I, glm::vec3(4.0, 1.0, 8.0));
-    glm::mat4 SAsphalt2 = glm::scale    (I, glm::vec3(4.0, 1.0, 4.0));
-    glm::mat4 TAsphalt2 = glm::translate(I, glm::vec3(-16.0, 0.0, -8.0));
+    glm::mat4 SGrass = glm::scale    (I, glm::vec3(25.0, 1.0, 25.0));
+    glm::mat4 TGrass = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
 
-    drawObjectTex(plane, texAsphalt, P, V, M * SAsphalt);
-    drawObjectTex(plane, texTrack, P, V, M * TTrack * SAsphalt * Ry90);
-    drawObjectTex(plane, texCammo, P, V, M * TTerminal * STerminal * Ry90);
-    drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2*SAsphalt2);
+    glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
+    glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 18.0));
+    glm::mat4 SAsphalt2 = glm::scale    (I, glm::vec3(4.0, 1.0, 7.0));
+
+    glm::mat4 SAsphalt3 = glm::scale    (I, glm::vec3(5.0, 1.0, 18.0));
+
+    glm::mat4 TAsphalt = glm::translate(I, glm::vec3(6.0, -0.005, 12.0));
+    glm::mat4 TAsphalt2 = glm::translate(I, glm::vec3(-6.0, -0.0025, 0.0));
+
+    glm::mat4 TTrack1 = glm::translate(I, glm::vec3(5.5, 0.0, 0.0));
+    glm::mat4 TTrack2 = glm::translate(I, glm::vec3(14.5, 0.0, 0.0));
+
+    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-16.0, 0.0, 10.0));
+    glm::mat4 STerminal = glm::scale    (I, glm::vec3(5.0, 1.0, 10.0));
+
+    drawObjectTex(plane, texGrass, P, V, M * TGrass * SGrass); //Suelo de césped
+
+    drawObjectTex(plane, texTrack, P, V, M * TTrack1 * SAsphalt * Ry90); //Pistas de aterrizaje
+    drawObjectTex(plane, texTrack, P, V, M * TTrack2 * SAsphalt * Ry90);
+
+    drawObjectTex(plane, texAsphalt, P, V, M  * TAsphalt * Ry90 * SAsphalt2); //Pista transversal
+
+    drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2 * SAsphalt3); //Pista de aparcamiento
+
+    drawObjectTex(plane, texFloor, P, V, M * TTerminal * STerminal);
+    //drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2*SAsphalt2);
 }
 
 
@@ -289,7 +341,7 @@ void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 Rv = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Tv = glm::translate(I, glm::vec3(0.0, 0.0, 3.0));
     glDepthMask(GL_FALSE);
-    drawObjectTex(plane, texWindow, P, V, M * Tv * Rv);
+    //drawObjectTex(plane, texWindow, P, V, M * Tv * Rv);
     glDepthMask(GL_TRUE);
 }
 
