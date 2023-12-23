@@ -1,3 +1,2 @@
-
-**/cmake-build-debug/
-**/binary/*.exe
+proyectoFinal/cmake-build-debug/
+proyectoFinal/binary/*.exe
