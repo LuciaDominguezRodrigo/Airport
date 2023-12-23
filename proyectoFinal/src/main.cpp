@@ -163,14 +163,14 @@ void configScene() {
     lightG.ambient = glm::vec3(0.5, 0.5, 0.5);
 
  // Luces direccionales
-    lightD[0].direction = glm::vec3(-1.0, 0.0, 0.0);
-    lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
-    lightD[0].diffuse   = glm::vec3( 0.7, 0.7, 0.7);
-    lightD[0].specular  = glm::vec3( 0.7, 0.7, 0.7);
+    lightD[0].direction = glm::vec3(0.0, 0.0, 1.0);  // Dirección hacia el centro
+    lightD[0].ambient   = glm::vec3(0.1, 0.1, 0.1);
+    lightD[0].diffuse   = glm::vec3(0.7, 0.7, 0.7);
+    lightD[0].specular  = glm::vec3(0.7, 0.7, 0.7);
 
  // Luces posicionales
-    lightP[0].position    = glm::vec3(0.0, 3.0, 3.0);
-    lightP[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
+    lightP[0].position    = glm::vec3(-8.0, 5.0, 3.0);
+    lightP[0].ambient     = glm::vec3(0.8, 0.8, 0.8);
     lightP[0].diffuse     = glm::vec3(0.9, 0.9, 0.9);
     lightP[0].specular    = glm::vec3(0.9, 0.9, 0.9);
     lightP[0].c0          = 1.00;
@@ -178,11 +178,11 @@ void configScene() {
     lightP[0].c2          = 0.20;
 
  // Luces focales
-    lightF[0].position    = glm::vec3(-2.0,  2.0,  5.0);
-    lightF[0].direction   = glm::vec3( 2.0, -2.0, -5.0);
-    lightF[0].ambient     = glm::vec3( 0.2,  0.2,  0.2);
-    lightF[0].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[0].specular    = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[0].position    = glm::vec3(0.0, 2.0, 5.0);  // Posición encima del caza
+    lightF[0].direction   = glm::normalize(glm::vec3(-8.0, 0.0, 0.0) - lightF[0].position);  // Apunta al caza
+    lightF[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
+    lightF[0].diffuse     = glm::vec3(0.9, 0.9, 0.9);
+    lightF[0].specular    = glm::vec3(0.9, 0.9, 0.9);
     lightF[0].innerCutOff = 10.0;
     lightF[0].outerCutOff = lightF[0].innerCutOff + 5.0;
     lightF[0].c0          = 1.000;
