@@ -11,6 +11,10 @@ void setLights (glm::mat4 P, glm::mat4 V);
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawObjectTex(Model model, Textures textures, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
+void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+
 void funFramebufferSize(GLFWwindow* window, int width, int height);
 void funKey            (GLFWwindow* window, int key  , int scancode, int action, int mods);
 void funScroll         (GLFWwindow* window, double xoffset, double yoffset);
@@ -26,12 +30,6 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
-   Texture imgRuby;
-   Texture imgGold;
-   Texture imgEarth;
-   Texture imgChess;
-   Texture imgCubeDiffuse;
-   Texture imgCubeSpecular;
    Texture imgWindow;
    Texture asphaltDiffuse;
    Texture asphaltSpecular;
@@ -50,13 +48,6 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Light     lightP[NLP];
    Light     lightF[NLF];
    Material  mluz;
-   Material  ruby;
-   Material  gold;
-   Textures  texRuby;
-   Textures  texGold;
-   Textures  texEarth;
-   Textures  texChess;
-   Textures  texCube;
    Textures  texWindow;
    Textures  texAsphalt;
    Textures  texCammo;
@@ -144,17 +135,15 @@ void configScene() {
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
-    imgRuby.initTexture("resources/textures/imgRuby.png");
-    imgGold.initTexture("resources/textures/imgGold.png");
-    imgEarth.initTexture("resources/textures/imgEarth.png");
-    imgChess.initTexture("resources/textures/imgChess.png");
-    imgCubeDiffuse.initTexture("resources/textures/imgCubeDiffuse.png");
-    imgCubeSpecular.initTexture("resources/textures/imgCubeSpecular.png");
+
     imgWindow.initTexture("resources/textures/imgWindow.png");
+
     asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
     asphaltSpecular.initTexture("resources/textures/asphaltSpecular.png");
     asphaltNormal.initTexture("resources/textures/asphaltNormal.png");
+
     cammo.initTexture("resources/textures/cammo.jpg");
+
     trackDiffuse.initTexture("resources/textures/trackDiffuse.jpg");
     trackSpecular.initTexture("resources/textures/trackSpecular.jpg");
     trackNormal.initTexture("resources/textures/trackNormal.jpg");
@@ -163,7 +152,7 @@ void configScene() {
     lightG.ambient = glm::vec3(0.5, 0.5, 0.5);
 
  // Luces direccionales
-    lightD[0].direction = glm::vec3(0.0, 0.0, 1.0);  // Dirección hacia el centro
+    lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);  // Dirección hacia el suelo
     lightD[0].ambient   = glm::vec3(0.1, 0.1, 0.1);
     lightD[0].diffuse   = glm::vec3(0.7, 0.7, 0.7);
     lightD[0].specular  = glm::vec3(0.7, 0.7, 0.7);
@@ -205,48 +194,6 @@ void configScene() {
     mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
     mluz.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
     mluz.shininess = 1.0;
-
-    ruby.ambient   = glm::vec4(0.174500, 0.011750, 0.011750, 0.55);
-    ruby.diffuse   = glm::vec4(0.614240, 0.041360, 0.041360, 0.55);
-    ruby.specular  = glm::vec4(0.727811, 0.626959, 0.626959, 0.55);
-    ruby.emissive  = glm::vec4(0.000000, 0.000000, 0.000000, 1.00);
-    ruby.shininess = 76.8;
-
-    gold.ambient   = glm::vec4(0.247250, 0.199500, 0.074500, 1.00);
-    gold.diffuse   = glm::vec4(0.751640, 0.606480, 0.226480, 1.00);
-    gold.specular  = glm::vec4(0.628281, 0.555802, 0.366065, 1.00);
-    gold.emissive  = glm::vec4(0.000000, 0.000000, 0.000000, 1.00);
-    gold.shininess = 51.2;
-
-    texRuby.diffuse   = imgRuby.getTexture();
-    texRuby.specular  = imgRuby.getTexture();
-    texRuby.emissive  = imgNoEmissive.getTexture();
-    texRuby.normal    = 0;
-    texRuby.shininess = 76.8;
-
-    texGold.diffuse   = imgGold.getTexture();
-    texGold.specular  = imgGold.getTexture();
-    texGold.emissive  = imgNoEmissive.getTexture();
-    texGold.normal    = 0;
-    texGold.shininess = 51.2;
-
-    texEarth.diffuse   = imgEarth.getTexture();
-    texEarth.specular  = imgEarth.getTexture();
-    texEarth.emissive  = imgNoEmissive.getTexture();
-    texEarth.normal    = 0;
-    texEarth.shininess = 10.0;
-
-    texChess.diffuse   = imgChess.getTexture();
-    texChess.specular  = imgChess.getTexture();
-    texChess.emissive  = imgNoEmissive.getTexture();
-    texChess.normal    = 0;
-    texChess.shininess = 10.0;
-
-    texCube.diffuse    = imgCubeDiffuse.getTexture();
-    texCube.specular   = imgCubeSpecular.getTexture();
-    texCube.emissive   = imgNoEmissive.getTexture();
-    texCube.normal     = 0;
-    texCube.shininess  = 10.0;
 
     texWindow.diffuse   = imgWindow.getTexture();
     texWindow.specular  = imgWindow.getTexture();
@@ -303,6 +250,17 @@ void renderScene() {
     setLights(P,V);
 
  // Dibujamos la escena
+    glm::mat4 M = I; //Sustituir I por producto de matrices en caso de necesidad de movimiento global de la escena
+
+    drawSuelo(P, V, M);
+    drawAvion(P, V, M);
+    drawVentanas(P, V, M);
+
+
+}
+
+
+void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
     glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 12.0));
     glm::mat4 TTrack = glm::translate(I, glm::vec3(-8.0, 0.0, 0.0));
@@ -310,24 +268,33 @@ void renderScene() {
     glm::mat4 STerminal = glm::scale    (I, glm::vec3(4.0, 1.0, 8.0));
     glm::mat4 SAsphalt2 = glm::scale    (I, glm::vec3(4.0, 1.0, 4.0));
     glm::mat4 TAsphalt2 = glm::translate(I, glm::vec3(-16.0, 0.0, -8.0));
-    drawObjectTex(plane, texAsphalt, P, V, SAsphalt);
-    drawObjectTex(plane, texTrack, P, V, TTrack * SAsphalt * Ry90);
-    drawObjectTex(plane, texChess, P, V, TTerminal * STerminal * Ry90);
-    drawObjectTex(plane, texAsphalt, P, V, TAsphalt2*SAsphalt2);
 
-    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.02, 0.02, 0.02));
+    drawObjectTex(plane, texAsphalt, P, V, M * SAsphalt);
+    drawObjectTex(plane, texTrack, P, V, M * TTrack * SAsphalt * Ry90);
+    drawObjectTex(plane, texCammo, P, V, M * TTerminal * STerminal * Ry90);
+    drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2*SAsphalt2);
+}
+
+
+void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.015, 0.015, 0.015));
     glm::mat4 RJet = glm::rotate   (I, glm::radians(rotY + 90), glm::vec3(0,1,0));
     glm::mat4 Rx = glm::rotate   (I, glm::radians(rotX ), glm::vec3(1,0,0));
     glm::mat4 TJet = glm::translate(I, glm::vec3(-8.0, 0.0, desZ));
-    drawObjectTex(jet, texCammo, P, V, TJet*  Rx * RJet * SJet);
+    drawObjectTex(jet, texCammo, P, V, M * TJet*  Rx * RJet * SJet);
+}
 
+
+void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 Rv = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Tv = glm::translate(I, glm::vec3(0.0, 0.0, 3.0));
     glDepthMask(GL_FALSE);
-        drawObjectTex(plane, texWindow, P, V, Tv * Rv);
+    drawObjectTex(plane, texWindow, P, V, M * Tv * Rv);
     glDepthMask(GL_TRUE);
-
 }
+
+
+
 
 void setLights(glm::mat4 P, glm::mat4 V) {
     shaders.setLight("ulightG",lightG);
