@@ -310,10 +310,10 @@ void renderScene() {
     drawObjectTex(plane, texTrack, P, V, TTrack * SAsphalt * Ry90);
 
     glm::mat4 SJet = glm::scale    (I, glm::vec3(0.02, 0.02, 0.02));
-    glm::mat4 Ry = glm::rotate   (I, glm::radians(rotY), glm::vec3(0,1,0));
-    glm::mat4 Rx = glm::rotate   (I, glm::radians(rotX), glm::vec3(1,0,0));
-    glm::mat4 Tz = glm::translate(I, glm::vec3(0.0, 0.0, desZ));
-    drawObjectTex(jet, texCammo, P, V, Tz * Rx * Ry * SJet);
+    glm::mat4 RJet = glm::rotate   (I, glm::radians(rotY + 90), glm::vec3(0,1,0));
+    glm::mat4 Rx = glm::rotate   (I, glm::radians(rotX ), glm::vec3(1,0,0));
+    glm::mat4 TJet = glm::translate(I, glm::vec3(-8.0, 0.0, desZ));
+    drawObjectTex(jet, texCammo, P, V, TJet*  Rx * RJet * SJet);
 
     glm::mat4 Rv = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Tv = glm::translate(I, glm::vec3(0.0, 0.0, 3.0));
