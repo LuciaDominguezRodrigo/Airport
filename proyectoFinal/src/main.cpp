@@ -81,6 +81,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    float alphaX =  0.0;
    float alphaY =  0.0;
 
+//Variables auxiliares temporales para control de cámara
+    float x   = 0.0;
+    float y =  6.0;
+    float z =  -6.0;
+
 int main() {
 
  // Inicializamos GLFW
@@ -143,9 +148,9 @@ void configScene() {
     shaders.initShaders("resources/shaders/vshader.glsl","resources/shaders/fshader.glsl");
 
  // Modelos
-    sphere.initModel("resources/models/sphere.obj");
-    plane.initModel("resources/models/plane.obj");
-    jet.initModel("resources/models/jet.obj");
+    sphere.initModel("resources/models/geometric/sphere.obj");
+    plane.initModel("resources/models/geometric/plane.obj");
+    jet.initModel("resources/models/planes/jet.obj");
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
@@ -267,14 +272,15 @@ void renderScene() {
 
  // Matriz P
     float nplane =  0.1;
-    float fplane = 30.0;
+    float fplane = 50.0;
     float aspect = (float)w/(float)h;
     glm::mat4 P = glm::perspective(glm::radians(fovy), aspect, nplane, fplane);
 
  // Matriz V
-    float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
+    //Restauración de movimiento orbital: quitar las variables globales x, y, z y descomentar las siguientes líneas
+    /*float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
     float y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
-    float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
+    float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));*/
     glm::vec3 eye   (  x,   y,   z);
     glm::vec3 center(0.0, 0.0,  0.0);
     glm::vec3 up    (0.0, 1.0,  0.0);
@@ -300,7 +306,7 @@ void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TGrass = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
 
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
-    glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 18.0));
+    glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 20.0));
     glm::mat4 SAsphalt2 = glm::scale    (I, glm::vec3(4.0, 1.0, 7.0));
 
     glm::mat4 SAsphalt3 = glm::scale    (I, glm::vec3(5.0, 1.0, 18.0));
@@ -329,7 +335,7 @@ void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.015, 0.015, 0.015));
+    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.01, 0.01, 0.01));
     glm::mat4 RJet = glm::rotate   (I, glm::radians(rotY + 90), glm::vec3(0,1,0));
     glm::mat4 Rx = glm::rotate   (I, glm::radians(rotX ), glm::vec3(1,0,0));
     glm::mat4 TJet = glm::translate(I, glm::vec3(-8.0, 0.0, desZ));
@@ -416,6 +422,14 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             rotX = 0.0f;
             rotY = 0.0f;
             break;
+
+        //Auxiliar
+        case GLFW_KEY_W:    y += 1.0f;   break;
+        case GLFW_KEY_S:  y -= 1.0f;   break;
+        case GLFW_KEY_A:  x += 1.0f;   break;
+        case GLFW_KEY_D: x -= 1.0f;   break;
+        case GLFW_KEY_E:  z += 1.0f;   break;
+        case GLFW_KEY_Q: z -= 1.0f;   break;
     }
 
 }
