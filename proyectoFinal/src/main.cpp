@@ -15,6 +15,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
 void funFramebufferSize(GLFWwindow* window, int width, int height);
 void funKey            (GLFWwindow* window, int key  , int scancode, int action, int mods);
@@ -29,11 +30,15 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model plane;
    Model jet;
    Model fence;
+   Model cube;
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
+   Texture imgMiddleEmissive;
 
    Texture imgWindow;
+
+   Texture imgSky;
 
    Texture asphaltDiffuse;
    Texture asphaltSpecular;
@@ -57,6 +62,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture jetWingsDiffuse;
 
    Texture fenceDiffuse;
+   Texture fenceNormal;
 
 // Luces y materiales
    #define   NLD 1
@@ -68,6 +74,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Light     lightF[NLF];
    Material  mluz;
    Textures  texWindow;
+   Textures  texSky;
    Textures  texAsphalt;
    Textures  texCammo;
    Textures  texTrack;
@@ -75,6 +82,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texGrass;
    Textures  texJet;
    Textures  texFence;
+
 
 // Viewport
    int w = 500;
@@ -155,6 +163,7 @@ void configScene() {
     shaders.initShaders("resources/shaders/vshader.glsl","resources/shaders/fshader.glsl");
 
  // Modelos
+    cube.initModel("resources/models/geometric/cube.obj");
     sphere.initModel("resources/models/geometric/sphere.obj");
     plane.initModel("resources/models/geometric/plane.obj");
     jet.initModel("resources/models/planes/jet.obj");
@@ -162,8 +171,11 @@ void configScene() {
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
+    imgMiddleEmissive.initTexture("resources/textures/imgMiddleEmissive.png");
 
     imgWindow.initTexture("resources/textures/imgWindow.png");
+
+    imgSky.initTexture("resources/textures/autumn_field_2k.jpg");
 
     asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
     asphaltSpecular.initTexture("resources/textures/asphaltSpecular.png");
@@ -186,7 +198,10 @@ void configScene() {
     jetDiffuse.initTexture("resources/textures/jetBodyDiffuse.jpg");
     jetWingsDiffuse.initTexture("resources/textures/jetWingsDiffuse.jpg");
 
-    fenceDiffuse.initTexture("resources/textures/fenceDiffuse.jpg");
+    fenceDiffuse.initTexture("resources/textures/metal02.png");
+    fenceNormal.initTexture("resources/textures/metalN02.png");
+
+
 
 
  // Luz ambiental global
@@ -274,16 +289,21 @@ void configScene() {
 
     texJet.diffuse    = jetDiffuse.getTexture();
     texJet.specular = jetDiffuse.getTexture();
-    texJet.emissive   = imgNoEmissive.getTexture();
+    texJet.emissive   = jetDiffuse.getTexture();
     texJet.normal     = 0;
     texJet.shininess  = 51.2;
 
     texFence.diffuse    = fenceDiffuse.getTexture();
     texFence.specular = fenceDiffuse.getTexture();
-    texFence.emissive   = imgNoEmissive.getTexture();
-    texFence.normal     = 0;
-    texFence.shininess  = 51.2;
+    texFence.emissive   = imgMiddleEmissive.getTexture();
+    texFence.normal     = fenceNormal.getTexture();
+    texFence.shininess  = 11.2;
 
+    texSky.diffuse    = imgSky.getTexture();
+    texSky.specular = imgSky.getTexture();
+    texSky.emissive   = imgSky.getTexture();
+    texSky.normal     = 0;
+    texSky.shininess  = 51.2;
 }
 
 void renderScene() {
@@ -345,6 +365,8 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TTerminal = glm::translate(I, glm::vec3(-16.0, 0.0, 10.0));
     glm::mat4 STerminal = glm::scale    (I, glm::vec3(5.0, 1.0, 10.0));
 
+    drawCielo(P, V, M);
+
     drawObjectTex(plane, texGrass, P, V, M * TGrass * SGrass); //Suelo de césped
 
     drawObjectTex(plane, texTrack, P, V, M * TTrack1 * SAsphalt * Ry90); //Pistas de aterrizaje
@@ -380,6 +402,12 @@ void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 T1 = glm::translate(I, glm::vec3(0.0, 1.6, -20.0));
     drawObjectTex(fence, texFence, P, V, M * T1); //Suelo de la terminal planta 0
+}
+
+void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    glm::mat4 S = glm::scale    (I, glm::vec3(18.0, 18.0, 18.0));
+    glm::mat4 T = glm::translate(I, glm::vec3(0.0, 1.5, 0.0));
+    drawObjectTex(sphere, texSky, P, V, M * T * S); //Suelo de la terminal planta 0
 }
 
 
