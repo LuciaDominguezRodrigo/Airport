@@ -11,9 +11,10 @@ void setLights (glm::mat4 P, glm::mat4 V);
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawObjectTex(Model model, Textures textures, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
-void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
 void funFramebufferSize(GLFWwindow* window, int width, int height);
 void funKey            (GLFWwindow* window, int key  , int scancode, int action, int mods);
@@ -27,6 +28,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model sphere;
    Model plane;
    Model jet;
+   Model fence;
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
@@ -51,6 +53,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture grassSpecular;
    Texture grassNormal;
 
+   Texture jetDiffuse;
+   Texture jetWingsDiffuse;
+
+   Texture fenceDiffuse;
+
 // Luces y materiales
    #define   NLD 1
    #define   NLP 1
@@ -66,14 +73,14 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texTrack;
    Textures  texFloor;
    Textures  texGrass;
+   Textures  texJet;
+   Textures  texFence;
 
 // Viewport
    int w = 500;
    int h = 500;
 
 // Animaciones
-   float rotX = 0.0;
-   float rotY = 0.0;
    float desZ = 0.0;
 
 // Movimiento de camara
@@ -82,9 +89,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    float alphaY =  0.0;
 
 //Variables auxiliares temporales para control de cámara
-    float x   = 0.0;
-    float y =  6.0;
-    float z =  -6.0;
+    float xCenter   = 0.0;
+    float yCenter =  6.0;
+    float zCenter =  -6.0;
 
 int main() {
 
@@ -151,6 +158,7 @@ void configScene() {
     sphere.initModel("resources/models/geometric/sphere.obj");
     plane.initModel("resources/models/geometric/plane.obj");
     jet.initModel("resources/models/planes/jet.obj");
+    fence.initModel("resources/models/sceneParts/fence.obj");
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
@@ -174,6 +182,11 @@ void configScene() {
     grassDiffuse.initTexture("resources/textures/cespedDifusa.jpg");
     grassSpecular.initTexture("resources/textures/cespedEspecular.jpg");
     grassNormal.initTexture("resources/textures/cespedNormal.jpg");
+
+    jetDiffuse.initTexture("resources/textures/jetBodyDiffuse.jpg");
+    jetWingsDiffuse.initTexture("resources/textures/jetWingsDiffuse.jpg");
+
+    fenceDiffuse.initTexture("resources/textures/fenceDiffuse.jpg");
 
 
  // Luz ambiental global
@@ -259,6 +272,18 @@ void configScene() {
     texGrass.normal     = grassNormal.getTexture();
     texGrass.shininess  = 51.2;
 
+    texJet.diffuse    = jetDiffuse.getTexture();
+    texJet.specular = jetDiffuse.getTexture();
+    texJet.emissive   = imgNoEmissive.getTexture();
+    texJet.normal     = 0;
+    texJet.shininess  = 51.2;
+
+    texFence.diffuse    = fenceDiffuse.getTexture();
+    texFence.specular = fenceDiffuse.getTexture();
+    texFence.emissive   = imgNoEmissive.getTexture();
+    texFence.normal     = 0;
+    texFence.shininess  = 51.2;
+
 }
 
 void renderScene() {
@@ -277,12 +302,12 @@ void renderScene() {
     glm::mat4 P = glm::perspective(glm::radians(fovy), aspect, nplane, fplane);
 
  // Matriz V
-    //Restauración de movimiento orbital: quitar las variables globales x, y, z y descomentar las siguientes líneas
-    /*float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
+    //Restauración de movimiento orbital original: quitar las variables globales xCenter, yCenter, zCenter
+    float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
     float y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
-    float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));*/
+    float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
     glm::vec3 eye   (  x,   y,   z);
-    glm::vec3 center(0.0, 0.0,  0.0);
+    glm::vec3 center(xCenter, yCenter,  zCenter); //Cambiar por (0.0, 0.0, 0.0)
     glm::vec3 up    (0.0, 1.0,  0.0);
     glm::mat4 V = glm::lookAt(eye, center, up);
     shaders.setVec3("ueye",eye);
@@ -293,7 +318,7 @@ void renderScene() {
  // Dibujamos la escena
     glm::mat4 M = I; //Sustituir I por producto de matrices en caso de necesidad de movimiento global de la escena
 
-    drawSuelo(P, V, M);
+    drawEntorno(P, V, M);
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
 
@@ -301,7 +326,7 @@ void renderScene() {
 }
 
 
-void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 SGrass = glm::scale    (I, glm::vec3(25.0, 1.0, 25.0));
     glm::mat4 TGrass = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
 
@@ -329,17 +354,18 @@ void drawSuelo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
     drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2 * SAsphalt3); //Pista de aparcamiento
 
-    drawObjectTex(plane, texFloor, P, V, M * TTerminal * STerminal);
-    //drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2*SAsphalt2);
+    drawObjectTex(plane, texFloor, P, V, M * TTerminal * STerminal); //Suelo de la terminal planta 0
+
+    drawVallas(P, V, M);
 }
 
 
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.01, 0.01, 0.01));
-    glm::mat4 RJet = glm::rotate   (I, glm::radians(rotY + 90), glm::vec3(0,1,0));
-    glm::mat4 Rx = glm::rotate   (I, glm::radians(rotX ), glm::vec3(1,0,0));
+    glm::mat4 SJet = glm::scale    (I, glm::vec3(0.002, 0.002, 0.002));
+    glm::mat4 RJet = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
+    glm::mat4 Ry90 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(0,1,0));
     glm::mat4 TJet = glm::translate(I, glm::vec3(-8.0, 0.0, desZ));
-    drawObjectTex(jet, texCammo, P, V, M * TJet*  Rx * RJet * SJet);
+    drawObjectTex(jet, texJet, P, V, M * TJet * Ry90 * RJet * SJet);
 }
 
 
@@ -351,7 +377,10 @@ void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glDepthMask(GL_TRUE);
 }
 
-
+void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    glm::mat4 T1 = glm::translate(I, glm::vec3(0.0, 1.6, -20.0));
+    drawObjectTex(fence, texFence, P, V, M * T1); //Suelo de la terminal planta 0
+}
 
 
 void setLights(glm::mat4 P, glm::mat4 V) {
@@ -410,26 +439,18 @@ void funFramebufferSize(GLFWwindow* window, int width, int height) {
 void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
 
     switch(key) {
-        case GLFW_KEY_UP:    rotX -= 5.0f;   break;
-        case GLFW_KEY_DOWN:  rotX += 5.0f;   break;
-        case GLFW_KEY_LEFT:  rotY -= 5.0f;   break;
-        case GLFW_KEY_RIGHT: rotY += 5.0f;   break;
         case GLFW_KEY_Z:
             if(mods==GLFW_MOD_SHIFT) desZ -= desZ > -24.0f ? 0.1f : 0.0f;
             else                     desZ += desZ <   5.0f ? 0.1f : 0.0f;
             break;
-        default:
-            rotX = 0.0f;
-            rotY = 0.0f;
-            break;
 
         //Auxiliar
-        case GLFW_KEY_W:    y += 1.0f;   break;
-        case GLFW_KEY_S:  y -= 1.0f;   break;
-        case GLFW_KEY_A:  x += 1.0f;   break;
-        case GLFW_KEY_D: x -= 1.0f;   break;
-        case GLFW_KEY_E:  z += 1.0f;   break;
-        case GLFW_KEY_Q: z -= 1.0f;   break;
+        case GLFW_KEY_W:    yCenter += 1.0f;   break;
+        case GLFW_KEY_S:  yCenter -= 1.0f;   break;
+        case GLFW_KEY_A:  xCenter -= 1.0f;   break;
+        case GLFW_KEY_D: xCenter += 1.0f;   break;
+        case GLFW_KEY_E:  zCenter += 1.0f;   break;
+        case GLFW_KEY_Q: zCenter -= 1.0f;   break;
     }
 
 }
