@@ -16,6 +16,7 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
 void funFramebufferSize(GLFWwindow* window, int width, int height);
 void funKey            (GLFWwindow* window, int key  , int scancode, int action, int mods);
@@ -31,6 +32,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model jet;
    Model fence;
    Model cube;
+   Model cylinder;
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
@@ -64,6 +66,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture fenceDiffuse;
    Texture fenceNormal;
 
+   Texture torreConcreteDiffuse;
+   Texture torreConcreteSpecular;
+   Texture torreConcreteNormal;
+
+
 // Luces y materiales
    #define   NLD 1
    #define   NLP 1
@@ -82,6 +89,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texGrass;
    Textures  texJet;
    Textures  texFence;
+   Textures texConcrete;
 
 
 // Viewport
@@ -168,6 +176,7 @@ void configScene() {
     plane.initModel("resources/models/geometric/plane.obj");
     jet.initModel("resources/models/planes/jet.obj");
     fence.initModel("resources/models/sceneParts/fence.obj");
+    cylinder.initModel("resources/models/geometric/cylinder.obj");
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
@@ -200,6 +209,10 @@ void configScene() {
 
     fenceDiffuse.initTexture("resources/textures/metal02.png");
     fenceNormal.initTexture("resources/textures/metalN02.png");
+
+    torreConcreteDiffuse.initTexture ("resources/textures/concreteDiffuse.jpg");
+    torreConcreteSpecular.initTexture ("resources/textures/concreteSpecular.jpg");
+    torreConcreteNormal.initTexture ("resources/textures/concreteNormal.jpg");
 
 
 
@@ -304,6 +317,14 @@ void configScene() {
     texSky.emissive   = imgSky.getTexture();
     texSky.normal     = 0;
     texSky.shininess  = 51.2;
+
+    texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
+    texConcrete.specular = torreConcreteSpecular.getTexture();
+    texConcrete.emissive   = imgNoEmissive.getTexture();
+    texConcrete.normal     = torreConcreteNormal.getTexture();
+    texConcrete.shininess  = 51.2;
+
+
 }
 
 void renderScene() {
@@ -341,12 +362,14 @@ void renderScene() {
     drawEntorno(P, V, M);
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
+    drawTorreControl(P,V,M);
 
 
 }
 
 
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+
     glm::mat4 SGrass = glm::scale    (I, glm::vec3(25.0, 1.0, 25.0));
     glm::mat4 TGrass = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
 
@@ -408,6 +431,14 @@ void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 S = glm::scale    (I, glm::vec3(18.0, 18.0, 18.0));
     glm::mat4 T = glm::translate(I, glm::vec3(0.0, 1.5, 0.0));
     drawObjectTex(sphere, texSky, P, V, M * T * S); //Suelo de la terminal planta 0
+}
+
+void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    glm::mat4 S = glm::scale    (I, glm::vec3(2.0, 7.0, 2.0)); //para que no aparezca por debajo, el número de la y
+    glm::mat4 T = glm::translate(I, glm::vec3(-16.0, 7.0, -10.0)); // tiene que coincidir en las dos matrices
+    drawObjectTex(cylinder, texConcrete, P, V, M * T * S); //Suelo de la terminal planta 0
+
+
 }
 
 
