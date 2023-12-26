@@ -73,9 +73,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture torreConcreteSpecular;
    Texture torreConcreteNormal;
 
-   Texture glassDiffuse;
-   Texture glassSpecular;
-   Texture glassNormal;
+   Texture imgGlass;
 
 
 // Luces y materiales
@@ -222,12 +220,11 @@ void configScene() {
     fenceDiffuse.initTexture("resources/textures/metal02.png");
     fenceNormal.initTexture("resources/textures/metalN02.png");
 
-    torreConcreteDiffuse.initTexture ("resources/textures/concreteDiffuse.jpg");
-    torreConcreteSpecular.initTexture ("resources/textures/concreteSpecular.jpg");
-    torreConcreteNormal.initTexture ("resources/textures/concreteNormal.jpg");
+    torreConcreteDiffuse.initTexture("resources/textures/concreteDiffuse.jpg");
+    torreConcreteSpecular.initTexture("resources/textures/concreteSpecular.jpg");
+    torreConcreteNormal.initTexture("resources/textures/concreteNormal.jpg");
 
-    glassDiffuse.initTexture ("resources/textures/glassDiffuse.jpg");
-    glassNormal.initTexture ("resources/textures/glassNormal.jpg");
+    imgGlass.initTexture("resources/textures/darkWindowGlass.png");
 
 
 
@@ -339,11 +336,11 @@ void configScene() {
     texConcrete.normal     = torreConcreteNormal.getTexture();
     texConcrete.shininess  = 51.2;
 
-    texGlass.diffuse    = glassDiffuse.getTexture();
-    texGlass.specular =   glassDiffuse.getTexture();
-    texGlass.emissive   = imgNoEmissive.getTexture();
-    texGlass.normal     = glassNormal.getTexture();
-    texGlass.shininess  = 51.2;
+    texGlass.diffuse   = imgGlass.getTexture();
+    texGlass.specular  = imgGlass.getTexture();
+    texGlass.emissive  = imgGlass.getTexture();
+    texGlass.normal    = 0;
+    texGlass.shininess = 10.0;
 
 }
 
@@ -367,7 +364,7 @@ void renderScene() {
     float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
     float y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
     float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
-    glm::vec3 eye   (  x,   y,   z);
+    glm::vec3 eye   (x, 15.0, -10.0); //Cambiar por (x, y, z)
     glm::vec3 center(xCenter, yCenter,  zCenter); //Cambiar por (0.0, 0.0, 0.0)
     glm::vec3 up    (0.0, 1.0,  0.0);
     glm::mat4 V = glm::lookAt(eye, center, up);
@@ -458,17 +455,23 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 T1 = glm::translate(I, glm::vec3(-16.0, 7.0, -10.0)); // tiene que coincidir en las dos matrices
     drawObjectTex(torre1, texConcrete, P, V, M * T1 * S1);
 
-    glm::mat4 S2 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0)); //para que no aparezca por debajo, el número de la y
-    glm::mat4 T2 = glm::translate(I, glm::vec3(-16.0, 14.0, -10.0)); // tiene que coincidir en las dos matrices
-    drawObjectTex(torre1, texGlass, P, V, M * T2 * S2); //Suelo de la terminal planta 0
+    glm::mat4 S3 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0));
+    glm::mat4 T3 = glm::translate(I, glm::vec3(-16.0, 20.25, -10.0));
+    drawObjectTex(cone, texConcrete, P, V, M * T3 * S3);
 
-    glm::mat4 S3 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0)); //para que no aparezca por debajo, el número de la y
-    glm::mat4 T3 = glm::translate(I, glm::vec3(-16.0, 18.0, -10.0)); // tiene que coincidir en las dos matrices
-    drawObjectTex(cone, texConcrete, P, V, M * T3 * S3); //Suelo de la terminal planta 0
+    glm::mat4 S4 = glm::scale    (I, glm::vec3(0.2, 1.0, 0.2));
+    glm::mat4 T4 = glm::translate(I, glm::vec3(-16.0, 22.75, -10.0));
+    drawObjectTex(antena, texConcrete, P, V, M * T4 * S4);
 
-    glm::mat4 S4 = glm::scale    (I, glm::vec3(0.2, 1.0, 0.2)); //para que no aparezca por debajo, el número de la y
-    glm::mat4 T4 = glm::translate(I, glm::vec3(-16.0, 20.5, -10.0)); // tiene que coincidir en las dos matrices
-    drawObjectTex(antena, texConcrete, P, V, M * T4 * S4); //Suelo de la terminal planta 0
+    glm::mat4 S5 = glm::scale    (I, glm::vec3(4.0, 0.25, 4.0));
+    glm::mat4 T5 = glm::translate(I, glm::vec3(-16.0, 14.0, -10.0));
+    drawObjectTex(torre1, texConcrete, P, V, M * T5 * S5); //Base de cemento que tiene por debajo el vidrio de la torre
+
+    glm::mat4 S2 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0));
+    glm::mat4 T2 = glm::translate(I, glm::vec3(-16.0, 16.26, -10.0));
+    glDepthMask(GL_FALSE);
+    drawObjectTex(torre1, texGlass, P, V, M * T2 * S2);
+    glDepthMask(GL_TRUE);
 
 }
 
