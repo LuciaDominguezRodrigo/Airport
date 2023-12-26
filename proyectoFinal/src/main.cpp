@@ -32,7 +32,10 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model jet;
    Model fence;
    Model cube;
-   Model cylinder;
+   Model torre1;
+   Model torre2;
+   Model cone;
+   Model antena;
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
@@ -70,6 +73,10 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture torreConcreteSpecular;
    Texture torreConcreteNormal;
 
+   Texture glassDiffuse;
+   Texture glassSpecular;
+   Texture glassNormal;
+
 
 // Luces y materiales
    #define   NLD 1
@@ -89,7 +96,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texGrass;
    Textures  texJet;
    Textures  texFence;
-   Textures texConcrete;
+   Textures  texConcrete;
+   Textures  texGlass;
+
 
 
 // Viewport
@@ -176,7 +185,10 @@ void configScene() {
     plane.initModel("resources/models/geometric/plane.obj");
     jet.initModel("resources/models/planes/jet.obj");
     fence.initModel("resources/models/sceneParts/fence.obj");
-    cylinder.initModel("resources/models/geometric/cylinder.obj");
+    torre1.initModel("resources/models/geometric/cylinder.obj");
+    torre2.initModel("resources/models/geometric/cylinder.obj");
+    cone.initModel("resources/models/geometric/cone.obj");
+    antena.initModel("resources/models/geometric/cylinder.obj");
 
  // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
@@ -213,6 +225,9 @@ void configScene() {
     torreConcreteDiffuse.initTexture ("resources/textures/concreteDiffuse.jpg");
     torreConcreteSpecular.initTexture ("resources/textures/concreteSpecular.jpg");
     torreConcreteNormal.initTexture ("resources/textures/concreteNormal.jpg");
+
+    glassDiffuse.initTexture ("resources/textures/glassDiffuse.jpg");
+    glassNormal.initTexture ("resources/textures/glassNormal.jpg");
 
 
 
@@ -324,6 +339,11 @@ void configScene() {
     texConcrete.normal     = torreConcreteNormal.getTexture();
     texConcrete.shininess  = 51.2;
 
+    texGlass.diffuse    = glassDiffuse.getTexture();
+    texGlass.specular =   glassDiffuse.getTexture();
+    texGlass.emissive   = imgNoEmissive.getTexture();
+    texGlass.normal     = glassNormal.getTexture();
+    texGlass.shininess  = 51.2;
 
 }
 
@@ -434,10 +454,21 @@ void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 S = glm::scale    (I, glm::vec3(2.0, 7.0, 2.0)); //para que no aparezca por debajo, el número de la y
-    glm::mat4 T = glm::translate(I, glm::vec3(-16.0, 7.0, -10.0)); // tiene que coincidir en las dos matrices
-    drawObjectTex(cylinder, texConcrete, P, V, M * T * S); //Suelo de la terminal planta 0
+    glm::mat4 S1 = glm::scale    (I, glm::vec3(2.0, 7.0, 2.0)); //para que no aparezca por debajo, el número de la y
+    glm::mat4 T1 = glm::translate(I, glm::vec3(-16.0, 7.0, -10.0)); // tiene que coincidir en las dos matrices
+    drawObjectTex(torre1, texConcrete, P, V, M * T1 * S1);
 
+    glm::mat4 S2 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0)); //para que no aparezca por debajo, el número de la y
+    glm::mat4 T2 = glm::translate(I, glm::vec3(-16.0, 14.0, -10.0)); // tiene que coincidir en las dos matrices
+    drawObjectTex(torre1, texGlass, P, V, M * T2 * S2); //Suelo de la terminal planta 0
+
+    glm::mat4 S3 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0)); //para que no aparezca por debajo, el número de la y
+    glm::mat4 T3 = glm::translate(I, glm::vec3(-16.0, 18.0, -10.0)); // tiene que coincidir en las dos matrices
+    drawObjectTex(cone, texConcrete, P, V, M * T3 * S3); //Suelo de la terminal planta 0
+
+    glm::mat4 S4 = glm::scale    (I, glm::vec3(0.2, 1.0, 0.2)); //para que no aparezca por debajo, el número de la y
+    glm::mat4 T4 = glm::translate(I, glm::vec3(-16.0, 20.5, -10.0)); // tiene que coincidir en las dos matrices
+    drawObjectTex(antena, texConcrete, P, V, M * T4 * S4); //Suelo de la terminal planta 0
 
 }
 
