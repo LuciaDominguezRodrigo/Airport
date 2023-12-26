@@ -392,9 +392,8 @@ void renderScene() {
 
  // Dibujamos la escena
     glm::mat4 M = I; //Sustituir I por producto de matrices en caso de necesidad de movimiento global de la escena
-    xCenter = -16.0;
-    yCenter = 17.0;
-    zCenter = -10.0;
+
+    
     drawEntorno(P, V, M);
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
