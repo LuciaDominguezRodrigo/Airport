@@ -75,6 +75,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
    Texture imgGlass;
 
+   Texture metAntenaDiffuse;
+   Texture metAntenaNormal;
+   Texture metAntenaSpecular;
 
 // Luces y materiales
    #define   NLD 1
@@ -96,6 +99,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texFence;
    Textures  texConcrete;
    Textures  texGlass;
+   Textures  texMetalverde;
 
 
 
@@ -226,6 +230,9 @@ void configScene() {
 
     imgGlass.initTexture("resources/textures/darkWindowGlass.png");
 
+    metAntenaDiffuse.initTexture("resources/textures/metalverdeDiffuse.jpg");
+    metAntenaSpecular.initTexture("resources/textures/metalverdeSpecular.jpg");
+    metAntenaNormal.initTexture("resources/textures/metalverdeNormal.jpg");
 
 
 
@@ -268,6 +275,11 @@ void configScene() {
     lightF[1].c0          = 1.000;
     lightF[1].c1          = 0.090;
     lightF[1].c2          = 0.032;
+
+
+
+
+
 
  // Materiales
     mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
@@ -342,6 +354,11 @@ void configScene() {
     texGlass.normal    = 0;
     texGlass.shininess = 10.0;
 
+   texMetalverde.diffuse = metAntenaDiffuse.getTexture();
+    texMetalverde.specular= metAntenaSpecular.getTexture();
+    texMetalverde.normal = metAntenaNormal.getTexture();
+    texMetalverde.shininess  = 51.2;
+
 }
 
 void renderScene() {
@@ -375,7 +392,9 @@ void renderScene() {
 
  // Dibujamos la escena
     glm::mat4 M = I; //Sustituir I por producto de matrices en caso de necesidad de movimiento global de la escena
-
+    xCenter = -16.0;
+    yCenter = 17.0;
+    zCenter = -10.0;
     drawEntorno(P, V, M);
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
@@ -459,9 +478,20 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 T3 = glm::translate(I, glm::vec3(-16.0, 20.25, -10.0));
     drawObjectTex(cone, texConcrete, P, V, M * T3 * S3);
 
-    glm::mat4 S4 = glm::scale    (I, glm::vec3(0.2, 1.0, 0.2));
-    glm::mat4 T4 = glm::translate(I, glm::vec3(-16.0, 22.75, -10.0));
-    drawObjectTex(antena, texConcrete, P, V, M * T4 * S4);
+
+    //timmer antena
+    float rotationSpeedMillis = 2.0f / 10.0f;  // 2 degrees every 10 milliseconds
+    float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
+
+    glm::mat4 SRotateAntena = glm::rotate(I, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 TAntena = glm::translate(I, glm::vec3(-16.0, 22.75, -10.0));
+    glm::mat4 S4 = glm::scale(I, glm::vec3(0.2, 1.0, 0.2));
+    glm::mat4 rotatedAntenaModel = M * TAntena * SRotateAntena * S4;
+
+    drawObjectTex(antena, texMetalverde, P, V, rotatedAntenaModel);
+
+
+
 
     glm::mat4 S5 = glm::scale    (I, glm::vec3(4.0, 0.25, 4.0));
     glm::mat4 T5 = glm::translate(I, glm::vec3(-16.0, 14.0, -10.0));
