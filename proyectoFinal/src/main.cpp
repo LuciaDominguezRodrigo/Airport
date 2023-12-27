@@ -17,6 +17,7 @@ void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M);
+void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
 void funFramebufferSize(GLFWwindow* window, int width, int height);
 void funKey            (GLFWwindow* window, int key  , int scancode, int action, int mods);
@@ -36,6 +37,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model torre2;
    Model cone;
    Model antena;
+   Model cubeTerminal;
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
@@ -182,7 +184,7 @@ void configScene() {
     shaders.initShaders("resources/shaders/vshader.glsl","resources/shaders/fshader.glsl");
 
  // Modelos
-    cube.initModel("resources/models/geometric/cube.obj");
+    cubeTerminal.initModel("resources/models/geometric/cube.obj");
     sphere.initModel("resources/models/geometric/sphere.obj");
     plane.initModel("resources/models/geometric/plane.obj");
     jet.initModel("resources/models/planes/jet.obj");
@@ -398,7 +400,7 @@ void renderScene() {
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
     drawTorreControl(P,V,M);
-
+    drawTerminal(P,V,M);
 
 }
 
@@ -420,7 +422,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TTrack1 = glm::translate(I, glm::vec3(5.5, 0.0, 0.0));
     glm::mat4 TTrack2 = glm::translate(I, glm::vec3(14.5, 0.0, 0.0));
 
-    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-16.0, 0.0, 10.0));
+    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 0.0, 10.0));
     glm::mat4 STerminal = glm::scale    (I, glm::vec3(5.0, 1.0, 10.0));
 
     drawCielo(P, V, M);
@@ -490,8 +492,6 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(antena, texMetalverde, P, V, rotatedAntenaModel);
 
 
-
-
     glm::mat4 S5 = glm::scale    (I, glm::vec3(4.0, 0.25, 4.0));
     glm::mat4 T5 = glm::translate(I, glm::vec3(-16.0, 14.0, -10.0));
     drawObjectTex(torre1, texConcrete, P, V, M * T5 * S5); //Base de cemento que tiene por debajo el vidrio de la torre
@@ -504,6 +504,13 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 }
 
+void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    glm::mat4 STerminal = glm::scale(I, glm::vec3(5.0, 8.0, 10.0));
+    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 0.0, 10.0));
+    glDepthMask(GL_FALSE);
+    drawObjectTex(cubeTerminal, texGlass, P, V, M * TTerminal * STerminal);
+    glDepthMask(GL_TRUE);
+}
 
 void setLights(glm::mat4 P, glm::mat4 V) {
     shaders.setLight("ulightG",lightG);
