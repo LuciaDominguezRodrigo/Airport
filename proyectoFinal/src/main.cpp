@@ -38,6 +38,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model cone;
    Model antena;
    Model cubeTerminal;
+   Model sofa;
+
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
@@ -81,6 +83,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture metAntenaNormal;
    Texture metAntenaSpecular;
 
+   Texture sofaDiffuse;
+   Texture sofaSpecular;
+   Texture sofaNormal;
+
+
 // Luces y materiales
    #define   NLD 1
    #define   NLP 1
@@ -102,6 +109,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texConcrete;
    Textures  texGlass;
    Textures  texMetalverde;
+   Textures  texTelaSofa;
 
 
 
@@ -193,8 +201,10 @@ void configScene() {
     torre2.initModel("resources/models/geometric/cylinder.obj");
     cone.initModel("resources/models/geometric/cone.obj");
     antena.initModel("resources/models/geometric/cylinder.obj");
+    sofa.initModel("resources/models/sceneParts/sofa.obj");
 
- // Imagenes (texturas)
+
+    // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
     imgMiddleEmissive.initTexture("resources/textures/imgMiddleEmissive.png");
 
@@ -236,9 +246,15 @@ void configScene() {
     metAntenaSpecular.initTexture("resources/textures/metalverdeSpecular.jpg");
     metAntenaNormal.initTexture("resources/textures/metalverdeNormal.jpg");
 
+    sofaSpecular.initTexture("resources/textures/sofaSpecular.jpg");
+    sofaDiffuse.initTexture("resources/textures/sofaDiffuse.png");
+    sofaNormal.initTexture("resources/textures/sofaNormal.jpg");
 
 
- // Luz ambiental global
+
+
+
+    // Luz ambiental global
     lightG.ambient = glm::vec3(0.5, 0.5, 0.5);
 
  // Luces direccionales
@@ -333,7 +349,7 @@ void configScene() {
     texJet.shininess  = 51.2;
 
     texFence.diffuse    = fenceDiffuse.getTexture();
-    texFence.specular = fenceDiffuse.getTexture();
+    texFence.specular   = fenceDiffuse.getTexture();
     texFence.emissive   = imgMiddleEmissive.getTexture();
     texFence.normal     = fenceNormal.getTexture();
     texFence.shininess  = 11.2;
@@ -356,10 +372,15 @@ void configScene() {
     texGlass.normal    = 0;
     texGlass.shininess = 10.0;
 
-   texMetalverde.diffuse = metAntenaDiffuse.getTexture();
+    texMetalverde.diffuse = metAntenaDiffuse.getTexture();
     texMetalverde.specular= metAntenaSpecular.getTexture();
     texMetalverde.normal = metAntenaNormal.getTexture();
     texMetalverde.shininess  = 51.2;
+
+    texTelaSofa.diffuse = sofaDiffuse.getTexture();
+    texTelaSofa.specular= sofaSpecular.getTexture();
+    texTelaSofa.normal = sofaNormal.getTexture();
+    texTelaSofa.shininess  = 51.2;
 
 }
 
@@ -507,9 +528,17 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 STerminal = glm::scale(I, glm::vec3(5.0, 8.0, 10.0));
     glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 0.0, 10.0));
+
+    glm::mat4 SSofa = glm::scale(I, glm::vec3(2, 2, 2));  // Reducir el tamaño del sofá
+    glm::mat4 TSofa = glm::translate(I, glm::vec3(-22.0, 0.0, 17.90));
+    glm::mat4 RSofa = glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa * SSofa * RSofa);
+
+
     glDepthMask(GL_FALSE);
     drawObjectTex(cubeTerminal, texGlass, P, V, M * TTerminal * STerminal);
     glDepthMask(GL_TRUE);
+
 }
 
 void setLights(glm::mat4 P, glm::mat4 V) {
