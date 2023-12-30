@@ -126,9 +126,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    float alphaY =  0.0;
 
 //Variables auxiliares temporales para control de cámara
-    float xCenter   = 0.0;
-    float yCenter =  6.0;
-    float zCenter =  -6.0;
+    float x   = 0.0;
+    float y =  6.0;
+    float z =  -6.0;
 
 int main() {
 
@@ -210,7 +210,7 @@ void configScene() {
 
     imgWindow.initTexture("resources/textures/imgWindow.png");
 
-    imgSky.initTexture("resources/textures/autumn_field_2k.jpg");
+    imgSky.initTexture("resources/textures/fondoSinCielo.png");
 
     asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
     asphaltSpecular.initTexture("resources/textures/asphaltSpecular.png");
@@ -401,11 +401,11 @@ void renderScene() {
 
  // Matriz V
     //Restauración de movimiento orbital original: quitar las variables globales xCenter, yCenter, zCenter
-    float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
-    float y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
-    float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
-    glm::vec3 eye   (x, 15.0, -10.0); //Cambiar por (x, y, z)
-    glm::vec3 center(xCenter, yCenter,  zCenter); //Cambiar por (0.0, 0.0, 0.0)
+    //float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
+    //float y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
+    //float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
+    glm::vec3 eye   (x, y, z); //Cambiar por (x, y, z)
+    glm::vec3 center(0.0, 0.0, 0.0);
     glm::vec3 up    (0.0, 1.0,  0.0);
     glm::mat4 V = glm::lookAt(eye, center, up);
     shaders.setVec3("ueye",eye);
@@ -486,8 +486,8 @@ void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 S = glm::scale    (I, glm::vec3(18.0, 18.0, 18.0));
-    glm::mat4 T = glm::translate(I, glm::vec3(0.0, 1.5, 0.0));
+    glm::mat4 S = glm::scale    (I, glm::vec3(16.0, 16.0, 16.0));
+    glm::mat4 T = glm::translate(I, glm::vec3(0.0, 3.0, 0.0));
     drawObjectTex(sphere, texSky, P, V, M * T * S); //Suelo de la terminal planta 0
 }
 
@@ -603,12 +603,12 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             break;
 
         //Auxiliar
-        case GLFW_KEY_W:    yCenter += 1.0f;   break;
-        case GLFW_KEY_S:  yCenter -= 1.0f;   break;
-        case GLFW_KEY_A:  xCenter -= 1.0f;   break;
-        case GLFW_KEY_D: xCenter += 1.0f;   break;
-        case GLFW_KEY_E:  zCenter += 1.0f;   break;
-        case GLFW_KEY_Q: zCenter -= 1.0f;   break;
+        case GLFW_KEY_W:  y += 1.0f;   break;
+        case GLFW_KEY_S:  y -= 1.0f;   break;
+        case GLFW_KEY_A:  x -= 1.0f;   break;
+        case GLFW_KEY_D:  x += 1.0f;   break;
+        case GLFW_KEY_E:  z += 1.0f;   break;
+        case GLFW_KEY_Q:  z -= 1.0f;   break;
     }
 
 }
