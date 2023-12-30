@@ -45,8 +45,10 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture imgNoEmissive;
    Texture imgMiddleEmissive;
 
+
    Texture imgWindow;
 
+   Texture imgGround;
    Texture imgSky;
 
    Texture asphaltDiffuse;
@@ -98,6 +100,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Light     lightF[NLF];
    Material  mluz;
    Textures  texWindow;
+   Textures  texGround;
    Textures  texSky;
    Textures  texAsphalt;
    Textures  texCammo;
@@ -169,6 +172,7 @@ int main() {
  // Entramos en el bucle de renderizado
     configScene();
     while(!glfwWindowShouldClose(window)) {
+        std::cout << "Time: " << truncf(fmod(glfwGetTime(), 24.0f)) << std::endl;
         renderScene();
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -200,7 +204,7 @@ void configScene() {
     torre1.initModel("resources/models/geometric/cylinder.obj");
     torre2.initModel("resources/models/geometric/cylinder.obj");
     cone.initModel("resources/models/geometric/cone.obj");
-    antena.initModel("resources/models/geometric/cylinder.obj");
+    antena.initModel("resources/models/sceneParts/antena.obj");
     sofa.initModel("resources/models/sceneParts/sofa.obj");
 
 
@@ -210,7 +214,8 @@ void configScene() {
 
     imgWindow.initTexture("resources/textures/imgWindow.png");
 
-    imgSky.initTexture("resources/textures/fondoSinCielo.png");
+    imgGround.initTexture("resources/textures/fondoSinCielo.png");
+    imgSky.initTexture("resources/textures/colorCielo.png");
 
     asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
     asphaltSpecular.initTexture("resources/textures/asphaltSpecular.png");
@@ -344,7 +349,7 @@ void configScene() {
 
     texJet.diffuse    = jetDiffuse.getTexture();
     texJet.specular = jetDiffuse.getTexture();
-    texJet.emissive   = jetDiffuse.getTexture();
+    texJet.emissive   = imgNoEmissive.getTexture();
     texJet.normal     = 0;
     texJet.shininess  = 51.2;
 
@@ -354,11 +359,18 @@ void configScene() {
     texFence.normal     = fenceNormal.getTexture();
     texFence.shininess  = 11.2;
 
+    texGround.diffuse    = imgGround.getTexture();
+    texGround.specular = imgGround.getTexture();
+    texGround.emissive   = imgGround.getTexture();
+    texGround.normal     = 0;
+    texGround.shininess  = 51.2;
+
     texSky.diffuse    = imgSky.getTexture();
     texSky.specular = imgSky.getTexture();
     texSky.emissive   = imgSky.getTexture();
     texSky.normal     = 0;
     texSky.shininess  = 51.2;
+
 
     texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
     texConcrete.specular = torreConcreteSpecular.getTexture();
@@ -416,11 +428,13 @@ void renderScene() {
  // Dibujamos la escena
     glm::mat4 M = I; //Sustituir I por producto de matrices en caso de necesidad de movimiento global de la escena
 
+    glm::mat4 S = glm::scale(I, glm::vec3(0.4, 0.5, 0.4));
+    glm::mat4 T = glm::translate(I, glm::vec3(-7.5, 0.00, -10.0));
     
     drawEntorno(P, V, M);
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
-    drawTorreControl(P,V,M);
+    drawTorreControl(P,V,M * T * S);
     drawTerminal(P,V,M);
 
 }
@@ -486,9 +500,13 @@ void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 S = glm::scale    (I, glm::vec3(16.0, 16.0, 16.0));
+    glm::mat4 S1 = glm::scale    (I, glm::vec3(16.0, 16.0, 16.0));
+    glm::mat4 S2 = glm::scale    (I, glm::vec3(16.1, 16.1, 16.1));
     glm::mat4 T = glm::translate(I, glm::vec3(0.0, 3.0, 0.0));
-    drawObjectTex(sphere, texSky, P, V, M * T * S); //Suelo de la terminal planta 0
+    drawObjectTex(sphere, texSky, P, V, M * T * S2);
+    glDepthMask(GL_FALSE);
+    drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
+    glDepthMask(GL_TRUE);
 }
 
 void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
@@ -502,15 +520,15 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
     //timmer antena
-    float rotationSpeedMillis = 2.0f / 10.0f;  // 2 degrees every 10 milliseconds
+    float rotationSpeedMillis = 2.0f / 100.0f;  // 2 degrees every 10 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
 
     glm::mat4 SRotateAntena = glm::rotate(I, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 TAntena = glm::translate(I, glm::vec3(-16.0, 22.75, -10.0));
-    glm::mat4 S4 = glm::scale(I, glm::vec3(0.2, 1.0, 0.2));
-    glm::mat4 rotatedAntenaModel = M * TAntena * SRotateAntena * S4;
+    glm::mat4 S4 = glm::scale(I, glm::vec3(0.7, 0.7, 0.7));
+    glm::mat4 rotatedAntenaModel = M * TAntena * SRotateAntena;
 
-    drawObjectTex(antena, texMetalverde, P, V, rotatedAntenaModel);
+    drawObjectTex(antena, texFence, P, V, rotatedAntenaModel * S4);
 
 
     glm::mat4 S5 = glm::scale    (I, glm::vec3(4.0, 0.25, 4.0));
@@ -526,11 +544,11 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 STerminal = glm::scale(I, glm::vec3(5.0, 8.0, 10.0));
-    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 0.0, 10.0));
+    glm::mat4 STerminal = glm::scale(I, glm::vec3(5.0, 4.0, 10.0));
+    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 3.995, 10.0));
 
-    glm::mat4 SSofa = glm::scale(I, glm::vec3(2, 2, 2));  // Reducir el tamaño del sofá
-    glm::mat4 TSofa = glm::translate(I, glm::vec3(-22.0, 0.0, 17.90));
+    glm::mat4 SSofa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 TSofa = glm::translate(I, glm::vec3(-22.0, -0.20, 17.90));
     glm::mat4 RSofa = glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
     drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa * SSofa * RSofa);
 
