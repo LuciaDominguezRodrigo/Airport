@@ -11,6 +11,7 @@ void setLights (glm::mat4 P, glm::mat4 V);
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawObjectTex(Model model, Textures textures, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
+//void colorCielo();
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
@@ -50,6 +51,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
    Texture imgGround;
    Texture imgSky;
+   Texture imgClouds;
 
    Texture asphaltDiffuse;
    Texture asphaltSpecular;
@@ -102,6 +104,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texWindow;
    Textures  texGround;
    Textures  texSky;
+   Textures  texClouds;
    Textures  texAsphalt;
    Textures  texCammo;
    Textures  texTrack;
@@ -172,7 +175,6 @@ int main() {
  // Entramos en el bucle de renderizado
     configScene();
     while(!glfwWindowShouldClose(window)) {
-        std::cout << "Time: " << truncf(fmod(glfwGetTime(), 24.0f)) << std::endl;
         renderScene();
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -215,7 +217,8 @@ void configScene() {
     imgWindow.initTexture("resources/textures/imgWindow.png");
 
     imgGround.initTexture("resources/textures/fondoSinCielo.png");
-    imgSky.initTexture("resources/textures/colorCielo.png");
+    imgSky.initTexture("resources/textures/14.png"); //Color del cielo en función propia (prueba)
+    imgClouds.initTexture("resources/textures/nubes.png");
 
     asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
     asphaltSpecular.initTexture("resources/textures/asphaltSpecular.png");
@@ -254,9 +257,6 @@ void configScene() {
     sofaSpecular.initTexture("resources/textures/sofaSpecular.jpg");
     sofaDiffuse.initTexture("resources/textures/sofaDiffuse.png");
     sofaNormal.initTexture("resources/textures/sofaNormal.jpg");
-
-
-
 
 
     // Luz ambiental global
@@ -298,9 +298,6 @@ void configScene() {
     lightF[1].c0          = 1.000;
     lightF[1].c1          = 0.090;
     lightF[1].c2          = 0.032;
-
-
-
 
 
 
@@ -371,6 +368,11 @@ void configScene() {
     texSky.normal     = 0;
     texSky.shininess  = 51.2;
 
+    texClouds.diffuse    = imgClouds.getTexture();
+    texClouds.specular = imgClouds.getTexture();
+    texClouds.emissive   = imgClouds.getTexture();
+    texClouds.normal     = 0;
+    texClouds.shininess  = 51.2;
 
     texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
     texConcrete.specular = torreConcreteSpecular.getTexture();
@@ -398,6 +400,7 @@ void configScene() {
 
 void renderScene() {
 
+    //colorCielo();
  // Borramos el buffer de color
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -430,7 +433,7 @@ void renderScene() {
 
     glm::mat4 S = glm::scale(I, glm::vec3(0.4, 0.5, 0.4));
     glm::mat4 T = glm::translate(I, glm::vec3(-7.5, 0.00, -10.0));
-    
+
     drawEntorno(P, V, M);
     drawAvion(P, V, M);
     drawVentanas(P, V, M);
@@ -439,6 +442,53 @@ void renderScene() {
 
 }
 
+/*void colorCielo(){
+    int dayHour = truncf(fmod(glfwGetTime(), 24.0f));
+    std::cout << "Time: " << dayHour << std::endl;
+    switch(dayHour){
+        case 0 ... 3:
+            imgSky.initTexture("resources/textures/02.png");
+            break;
+        case 4 ... 5:
+            imgSky.initTexture("resources/textures/4.png");
+            break;
+        case 6 ... 7:
+            imgSky.initTexture("resources/textures/6.png");
+            break;
+        case 8 ... 9:
+            imgSky.initTexture("resources/textures/8.png");
+            break;
+        case 10 ... 11:
+            imgSky.initTexture("resources/textures/10.png");
+            break;
+        case 12 ... 13:
+            imgSky.initTexture("resources/textures/12.png");
+            break;
+        case 14 ... 15:
+            imgSky.initTexture("resources/textures/14.png");
+            break;
+        case 16 ... 17:
+            imgSky.initTexture("resources/textures/16.png");
+            break;
+        case 18 ... 19:
+            imgSky.initTexture("resources/textures/18.png");
+            break;
+        case 20 ... 21:
+            imgSky.initTexture("resources/textures/20.png");
+            break;
+        case 20 ... 23:
+            imgSky.initTexture("resources/textures/22.png");
+            break;
+    }
+
+    texSky.diffuse    = imgSky.getTexture();
+    texSky.specular = imgSky.getTexture();
+    texSky.emissive   = imgSky.getTexture();
+    texSky.normal     = 0;
+    texSky.shininess  = 51.2;
+
+}
+*/
 
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
@@ -500,10 +550,19 @@ void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    //timer nubes
+    float rotationSpeedMillis = 1.0f / 1000.0f;  // 2 degrees every 10 milliseconds
+    float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
+    glm::mat4 RNubes = glm::rotate(I, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+
     glm::mat4 S1 = glm::scale    (I, glm::vec3(16.0, 16.0, 16.0));
     glm::mat4 S2 = glm::scale    (I, glm::vec3(16.1, 16.1, 16.1));
+    glm::mat4 S3 = glm::scale    (I, glm::vec3(16.2, 16.2, 16.2));
     glm::mat4 T = glm::translate(I, glm::vec3(0.0, 3.0, 0.0));
-    drawObjectTex(sphere, texSky, P, V, M * T * S2);
+    drawObjectTex(sphere, texSky, P, V, M * T * S3);
+    glDepthMask(GL_FALSE);
+    drawObjectTex(sphere, texClouds, P, V, M * RNubes * T * S2); //Esfera que contiene al fondo de nubes
+    glDepthMask(GL_TRUE);
     glDepthMask(GL_FALSE);
     drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
     glDepthMask(GL_TRUE);
