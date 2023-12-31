@@ -545,8 +545,47 @@ void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 T1 = glm::translate(I, glm::vec3(0.0, 1.6, -20.0));
-    drawObjectTex(fence, texFence, P, V, M * T1); //Suelo de la terminal planta 0
+    glm::mat4 S = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));
+    glm::mat4 S2 = glm::scale(I, glm::vec3(0.5, 0.5, 0.25));
+    glm::mat4 S3 = glm::scale(I, glm::vec3(0.5, 0.5, 0.61));
+    glm::mat4 R = glm::rotate(I, glm::radians(90.0f), glm::vec3(0,1,0));
+    float desX1 = -15.9;
+    float desZ1 = 22.25;
+    float desX2 = 20.0;
+    float desZ2 = -21.25;
+    glm::mat4 T;
+
+    for(int i=0; i<= 24; i++){
+        T = glm::translate(I, glm::vec3(desX1, 0.8, 23.0));
+        drawObjectTex(fence, texFence, P, V, M * T * S); //Valla alambrada
+        desX1 += 1.5;
+    }
+
+    for(int i=0; i<= 29; i++){
+        T = glm::translate(I, glm::vec3(20.85, 0.8, desZ1));
+        drawObjectTex(fence, texFence, P, V, M * T * S * R); //Valla alambrada
+        desZ1 -= 1.5;
+    }
+
+    for(int i=0; i<= 24; i++){
+        T = glm::translate(I, glm::vec3(desX2, 0.8, -22.0));
+        drawObjectTex(fence, texFence, P, V, M * T * S); //Valla alambrada
+        desX2 -= 1.5;
+    }
+
+    for(int i=0; i<= 13; i++){
+        T = glm::translate(I, glm::vec3(-16.75, 0.8, desZ2));
+        drawObjectTex(fence, texFence, P, V, M * T * S * R); //Valla alambrada
+        desZ2 += 1.5;
+    }
+
+    T = glm::translate(I, glm::vec3(-16.75, 0.8, -0.60));
+    drawObjectTex(fence, texFence, P, V, M * T * S2 * R);
+    T = glm::translate(I, glm::vec3(-16.75, 0.8, 20.75));
+    drawObjectTex(fence, texFence, P, V, M * T * S2 * R);
+    T = glm::translate(I, glm::vec3(-16.75, 0.8, 22.1125));
+    drawObjectTex(fence, texFence, P, V, M * T * S3 * R); 
+
 }
 
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
@@ -559,12 +598,12 @@ void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 S2 = glm::scale    (I, glm::vec3(16.1, 16.1, 16.1));
     glm::mat4 S3 = glm::scale    (I, glm::vec3(16.2, 16.2, 16.2));
     glm::mat4 T = glm::translate(I, glm::vec3(0.0, 3.0, 0.0));
-    drawObjectTex(sphere, texSky, P, V, M * T * S3);
+    //drawObjectTex(sphere, texSky, P, V, M * T * S3);
     glDepthMask(GL_FALSE);
-    drawObjectTex(sphere, texClouds, P, V, M * RNubes * T * S2); //Esfera que contiene al fondo de nubes
+    //drawObjectTex(sphere, texClouds, P, V, M * RNubes * T * S2); //Esfera que contiene al fondo de nubes
     glDepthMask(GL_TRUE);
     glDepthMask(GL_FALSE);
-    drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
+    //drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
     glDepthMask(GL_TRUE);
 }
 
