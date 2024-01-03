@@ -584,7 +584,7 @@ void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     T = glm::translate(I, glm::vec3(-16.75, 0.8, 20.75));
     drawObjectTex(fence, texFence, P, V, M * T * S2 * R);
     T = glm::translate(I, glm::vec3(-16.75, 0.8, 22.1125));
-    drawObjectTex(fence, texFence, P, V, M * T * S3 * R); 
+    drawObjectTex(fence, texFence, P, V, M * T * S3 * R);
 
 }
 
@@ -598,12 +598,12 @@ void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 S2 = glm::scale    (I, glm::vec3(16.1, 16.1, 16.1));
     glm::mat4 S3 = glm::scale    (I, glm::vec3(16.2, 16.2, 16.2));
     glm::mat4 T = glm::translate(I, glm::vec3(0.0, 3.0, 0.0));
-    //drawObjectTex(sphere, texSky, P, V, M * T * S3);
+    drawObjectTex(sphere, texSky, P, V, M * T * S3);
     glDepthMask(GL_FALSE);
-    //drawObjectTex(sphere, texClouds, P, V, M * RNubes * T * S2); //Esfera que contiene al fondo de nubes
+    drawObjectTex(sphere, texClouds, P, V, M * RNubes * T * S2); //Esfera que contiene al fondo de nubes
     glDepthMask(GL_TRUE);
     glDepthMask(GL_FALSE);
-    //drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
+    drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
     glDepthMask(GL_TRUE);
 }
 
