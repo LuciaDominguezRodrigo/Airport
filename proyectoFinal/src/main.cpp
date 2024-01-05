@@ -40,6 +40,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model antena;
    Model cubeTerminal;
    Model sofa;
+   Model chair;
+   Model table;
 
 
 // Imagenes (texturas)
@@ -208,6 +210,8 @@ void configScene() {
     cone.initModel("resources/models/geometric/cone.obj");
     antena.initModel("resources/models/sceneParts/antena.obj");
     sofa.initModel("resources/models/sceneParts/sofa.obj");
+    chair.initModel("resources/models/sceneParts/Chair.obj");
+    table.initModel("resources/models/sceneParts/SmallTable.obj");
 
 
     // Imagenes (texturas)
@@ -649,6 +653,28 @@ void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TSofa = glm::translate(I, glm::vec3(-22.0, -0.20, 17.90));
     glm::mat4 RSofa = glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
     drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa * SSofa * RSofa);
+
+    glm::mat4 TSofa1 = glm::translate(I, glm::vec3(-22.0, -0.20, 5));
+    drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa1 * SSofa * RSofa);
+
+    glm::mat4 SSilla = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 TSilla = glm::translate(I, glm::vec3(-20.0, 1, 10));
+    glm::mat4 RSilla= glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    drawObjectTex(chair, texTelaSofa, P, V, M * TSilla * SSilla * RSilla);
+
+    glm::mat4 SSilla2 = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 TSilla2 = glm::translate(I, glm::vec3(-20.0, 1, 7));
+    glm::mat4 RSilla2= glm::rotate(I, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    drawObjectTex(chair, texTelaSofa, P, V, M * TSilla2 * SSilla2 * RSilla2);
+
+
+    glm::mat4 SMesa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 TMesa = glm::translate(I, glm::vec3(-20.0, 1, 8.5));
+    //glm::mat4 RMesa= glm::rotate(I, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    drawObjectTex(table, texTelaSofa, P, V, M * TMesa * SMesa );
+
+
+
 
 
     glDepthMask(GL_FALSE);
