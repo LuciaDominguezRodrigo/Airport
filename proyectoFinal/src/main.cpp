@@ -611,7 +611,7 @@ void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 RSofa = glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
     drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa * SSofa * RSofa);
 
-    glm::mat4 TSofa1 = glm::translate(I, glm::vec3(-22.0, -0.20, 5));
+    glm::mat4 TSofa1 = glm::translate(I, glm::vec3(-22.0, -0.20, 2));
     drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa1 * SSofa * RSofa);
 
     glm::mat4 SSilla = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
