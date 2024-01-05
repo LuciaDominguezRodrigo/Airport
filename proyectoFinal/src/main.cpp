@@ -98,7 +98,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 // Luces y materiales
    #define   NLD 1
    #define   NLP 1
-   #define   NLF 2
+   #define   NLF 1
    Light     lightG;
    Light     lightD[NLD];
    Light     lightP[NLP];
@@ -286,26 +286,16 @@ void configScene() {
     lightP[0].c2          = 0.20;
 
  // Luces focales
-    lightF[0].position    = glm::vec3(0.0, 2.0, 5.0);  // Posición encima del caza
-    lightF[0].direction   = glm::normalize(glm::vec3(-8.0, 0.0, 0.0) - lightF[0].position);  // Apunta al caza
+    lightF[0].position    = glm::vec3(-8.0, 0.24, desZ-1.25);  // Posición del casquillo de la luz del morro del avión
+    lightF[0].direction   = glm::normalize(glm::vec3(-8.0, 0.24, desZ-3.0) - lightF[0].position);  // Apunta al caza
     lightF[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
     lightF[0].diffuse     = glm::vec3(0.9, 0.9, 0.9);
     lightF[0].specular    = glm::vec3(0.9, 0.9, 0.9);
     lightF[0].innerCutOff = 10.0;
-    lightF[0].outerCutOff = lightF[0].innerCutOff + 5.0;
+    lightF[0].outerCutOff = lightF[0].innerCutOff + 0.5;
     lightF[0].c0          = 1.000;
     lightF[0].c1          = 0.090;
     lightF[0].c2          = 0.032;
-    lightF[1].position    = glm::vec3( 2.0,  2.0,  5.0);
-    lightF[1].direction   = glm::vec3(-2.0, -2.0, -5.0);
-    lightF[1].ambient     = glm::vec3( 0.2,  0.2,  0.2);
-    lightF[1].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[1].specular    = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[1].innerCutOff = 5.0;
-    lightF[1].outerCutOff = lightF[1].innerCutOff + 1.0;
-    lightF[1].c0          = 1.000;
-    lightF[1].c1          = 0.090;
-    lightF[1].c2          = 0.032;
 
 
 
@@ -400,8 +390,10 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 SJet = glm::scale    (I, glm::vec3(0.002, 0.002, 0.002));
     glm::mat4 RJet = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(0,1,0));
+    glm::mat4 MDefault = glm::translate(I,glm::vec3(-8.0, 0.24, desZ-1.25)) * glm::scale(I,glm::vec3(0.01));
     glm::mat4 TJet = glm::translate(I, glm::vec3(-8.0, 0.0, desZ));
     drawObjectTex(jet, texJet, P, V, M * TJet * Ry90 * RJet * SJet);
+    drawObjectMat(sphere, mluz, P, V, MDefault);
 }
 
 
