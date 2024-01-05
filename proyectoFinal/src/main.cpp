@@ -11,7 +11,7 @@ void setLights (glm::mat4 P, glm::mat4 V);
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawObjectTex(Model model, Textures textures, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
-//void colorCielo();
+void skyChange();
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
@@ -52,7 +52,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture imgWindow;
 
    Texture imgGround;
-   Texture imgSky;
+   Texture imgSkyDay;
+   Texture imgSkyNight;
    Texture imgClouds;
 
    Texture asphaltDiffuse;
@@ -120,6 +121,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texTelaSofa;
 
 
+// Modo día/noche
+   bool nightMode = false;
 
 // Viewport
    int w = 500;
@@ -221,7 +224,8 @@ void configScene() {
     imgWindow.initTexture("resources/textures/imgWindow.png");
 
     imgGround.initTexture("resources/textures/fondoSinCielo.png");
-    imgSky.initTexture("resources/textures/14.png"); //Color del cielo en función propia (prueba)
+    imgSkyDay.initTexture("resources/textures/14.png"); //Color del cielo en función propia (prueba)
+    imgSkyNight.initTexture("resources/textures/4.png");
     imgClouds.initTexture("resources/textures/nubes.png");
 
     asphaltDiffuse.initTexture("resources/textures/asphaltDiffuse.jpg");
@@ -366,15 +370,15 @@ void configScene() {
     texGround.normal     = 0;
     texGround.shininess  = 51.2;
 
-    texSky.diffuse    = imgSky.getTexture();
-    texSky.specular = imgSky.getTexture();
-    texSky.emissive   = imgSky.getTexture();
+    texSky.diffuse    = imgSkyDay.getTexture();
+    texSky.specular = imgSkyDay.getTexture();
+    texSky.emissive   = imgSkyDay.getTexture();
     texSky.normal     = 0;
     texSky.shininess  = 51.2;
 
     texClouds.diffuse    = imgClouds.getTexture();
     texClouds.specular = imgClouds.getTexture();
-    texClouds.emissive   = imgClouds.getTexture();
+    texClouds.emissive   = imgNoEmissive.getTexture();
     texClouds.normal     = 0;
     texClouds.shininess  = 51.2;
 
@@ -404,7 +408,7 @@ void configScene() {
 
 void renderScene() {
 
-    //colorCielo();
+    skyChange();
  // Borramos el buffer de color
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -446,53 +450,6 @@ void renderScene() {
 
 }
 
-/*void colorCielo(){
-    int dayHour = truncf(fmod(glfwGetTime(), 24.0f));
-    std::cout << "Time: " << dayHour << std::endl;
-    switch(dayHour){
-        case 0 ... 3:
-            imgSky.initTexture("resources/textures/02.png");
-            break;
-        case 4 ... 5:
-            imgSky.initTexture("resources/textures/4.png");
-            break;
-        case 6 ... 7:
-            imgSky.initTexture("resources/textures/6.png");
-            break;
-        case 8 ... 9:
-            imgSky.initTexture("resources/textures/8.png");
-            break;
-        case 10 ... 11:
-            imgSky.initTexture("resources/textures/10.png");
-            break;
-        case 12 ... 13:
-            imgSky.initTexture("resources/textures/12.png");
-            break;
-        case 14 ... 15:
-            imgSky.initTexture("resources/textures/14.png");
-            break;
-        case 16 ... 17:
-            imgSky.initTexture("resources/textures/16.png");
-            break;
-        case 18 ... 19:
-            imgSky.initTexture("resources/textures/18.png");
-            break;
-        case 20 ... 21:
-            imgSky.initTexture("resources/textures/20.png");
-            break;
-        case 20 ... 23:
-            imgSky.initTexture("resources/textures/22.png");
-            break;
-    }
-
-    texSky.diffuse    = imgSky.getTexture();
-    texSky.specular = imgSky.getTexture();
-    texSky.emissive   = imgSky.getTexture();
-    texSky.normal     = 0;
-    texSky.shininess  = 51.2;
-
-}
-*/
 
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
@@ -751,6 +708,14 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
         case GLFW_KEY_D:  x += 1.0f;   break;
         case GLFW_KEY_E:  z += 1.0f;   break;
         case GLFW_KEY_Q:  z -= 1.0f;   break;
+        case GLFW_KEY_N:
+            if(action == GLFW_PRESS){
+                nightMode = !nightMode;
+            } else{
+                nightMode = nightMode;
+            }
+            break;
+
     }
 
 }
@@ -771,5 +736,23 @@ void funCursorPos(GLFWwindow* window, double xpos, double ypos) {
     alphaY = 90.0*(1.0 - 2.0*ypos/(float)h);
     if(alphaY<-limY) alphaY = -limY;
     if(alphaY> limY) alphaY =  limY;
+
+}
+
+void skyChange(){
+    if(nightMode){
+        texSky.diffuse    = imgSkyNight.getTexture();
+        texSky.specular = imgSkyNight.getTexture();
+        texSky.emissive   = imgSkyNight.getTexture();
+        texSky.normal     = 0;
+        texSky.shininess  = 51.2;
+    }
+    else{
+        texSky.diffuse    = imgSkyDay.getTexture();
+        texSky.specular = imgSkyDay.getTexture();
+        texSky.emissive   = imgSkyDay.getTexture();
+        texSky.normal     = 0;
+        texSky.shininess  = 51.2;
+    }
 
 }
