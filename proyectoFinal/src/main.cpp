@@ -99,7 +99,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 // Luces y materiales
    #define   NLD 1
    #define   NLP 1
-   #define   NLF 1
+   #define   NLF 2
    Light     lightG;
    Light     lightD[NLD];
    Light     lightP[NLP];
@@ -271,34 +271,44 @@ void configScene() {
 
 
     // Luz ambiental global
-    lightG.ambient = glm::vec3(0.0, 0.0, 0.0);
+    lightG.ambient = glm::vec3(0.00001, 0.00001, 0.00001);
 
- // Luces direccionales
-    lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);  // Dirección hacia el suelo
-    lightD[0].ambient   = glm::vec3(0.1, 0.1, 0.1);
-    lightD[0].diffuse   = glm::vec3(0.7, 0.7, 0.7);
-    lightD[0].specular  = glm::vec3(0.7, 0.7, 0.7);
+    // Luces direccionales
+    lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
+    lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
+    lightD[0].diffuse   = glm::vec3( 0.7, 0.7, 0.7);
+    lightD[0].specular  = glm::vec3( 0.7, 0.7, 0.7);
 
- // Luces posicionales
-    lightP[0].position    = glm::vec3(0.0, 17.0, 29.0);
-    lightP[0].ambient     = glm::vec3(0.6, 0.6, 0.6);
-    lightP[0].diffuse     = glm::vec3(0.6, 0.6, 0.6);
-    lightP[0].specular    = glm::vec3(0.6, 0.6, 0.6);
+    // Luces posicionales
+    lightP[0].position    = glm::vec3(0.0, 3.0, 3.0);
+    lightP[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
+    lightP[0].diffuse     = glm::vec3(0.9, 0.9, 0.9);
+    lightP[0].specular    = glm::vec3(0.9, 0.9, 0.9);
     lightP[0].c0          = 1.00;
     lightP[0].c1          = 0.22;
     lightP[0].c2          = 0.20;
 
- // Luces focales
-    lightF[0].position    = glm::vec3(-8.0, 0.24, desZ-1.25);  // Posición del casquillo de la luz del morro del avión
-    lightF[0].direction   = glm::normalize(glm::vec3(-8.0, 0.24, desZ-3.0) - lightF[0].position);  // Apunta al caza
-    lightF[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
-    lightF[0].diffuse     = glm::vec3(0.9, 0.9, 0.9);
-    lightF[0].specular    = glm::vec3(0.9, 0.9, 0.9);
+    // Luces focales
+    lightF[0].position    = glm::vec3(-2.0,  2.0,  5.0);
+    lightF[0].direction   = glm::vec3( 2.0, -2.0, -5.0);
+    lightF[0].ambient     = glm::vec3( 0.2,  0.2,  0.2);
+    lightF[0].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[0].specular    = glm::vec3( 0.9,  0.9,  0.9);
     lightF[0].innerCutOff = 10.0;
-    lightF[0].outerCutOff = lightF[0].innerCutOff + 0.5;
+    lightF[0].outerCutOff = lightF[0].innerCutOff + 5.0;
     lightF[0].c0          = 1.000;
     lightF[0].c1          = 0.090;
     lightF[0].c2          = 0.032;
+    lightF[1].position    = glm::vec3( 2.0,  2.0,  5.0);
+    lightF[1].direction   = glm::vec3(-2.0, -2.0, -5.0);
+    lightF[1].ambient     = glm::vec3( 0.2,  0.2,  0.2);
+    lightF[1].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[1].specular    = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[1].innerCutOff = 5.0;
+    lightF[1].outerCutOff = lightF[1].innerCutOff + 1.0;
+    lightF[1].c0          = 1.000;
+    lightF[1].c1          = 0.090;
+    lightF[1].c2          = 0.032;
 
 
 
