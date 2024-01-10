@@ -271,13 +271,13 @@ void configScene() {
 
 
     // Luz ambiental global
-    lightG.ambient = glm::vec3(0.00001, 0.00001, 0.00001);
+    lightG.ambient = glm::vec3(0.3, 0.3, 0.3);
 
     // Luces direccionales
-    lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
+    lightD[0].direction = glm::vec3(0.0, 1.0, 0.0);
     lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
-    lightD[0].diffuse   = glm::vec3( 0.7, 0.7, 0.7);
-    lightD[0].specular  = glm::vec3( 0.7, 0.7, 0.7);
+    lightD[0].diffuse   = glm::vec3( 0.1, 0.1, 0.1);
+    lightD[0].specular  = glm::vec3( 0.1, 0.1, 0.1);
 
     // Luces posicionales
     lightP[0].position    = glm::vec3(0.0, 3.0, 3.0);
@@ -366,6 +366,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
     glm::mat4 SGrass = glm::scale    (I, glm::vec3(25.0, 1.0, 25.0));
     glm::mat4 TGrass = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
+    glm::mat4 Rx180 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(1,0,0));
 
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
     glm::mat4 SAsphalt = glm::scale    (I, glm::vec3(4.0, 1.0, 20.0));
@@ -384,7 +385,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
     drawCielo(P, V, M);
 
-    drawObjectTex(plane, texGrass, P, V, M * TGrass * SGrass); //Suelo de césped
+    drawObjectTex(plane, texGrass, P, V, M * TGrass * SGrass * Rx180); //Suelo de césped
 
     drawObjectTex(plane, texTrack, P, V, M * TTrack1 * SAsphalt * Ry90); //Pistas de aterrizaje
     drawObjectTex(plane, texTrack, P, V, M * TTrack2 * SAsphalt * Ry90);
@@ -697,13 +698,13 @@ void texLoad(){
         mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.emissive  = glm::vec4(0.3, 0.3, 0.3, 0.3);
+        mluz.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
         mluz.shininess = 1.0;
 
-        mFrame.ambient   = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
-        mFrame.diffuse   = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
-        mFrame.specular  = glm::vec4(0.774597f, 0.774597f, 0.774597f, 1.0f);
-        mFrame.emissive  = glm::vec4(0.3, 0.3, 0.3, 0.3);
+        mFrame.ambient   = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
+        mFrame.diffuse   = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+        mFrame.specular  = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+        mFrame.emissive  = glm::vec4(0.03, 0.03, 0.03, 0.3);
         mFrame.shininess = 76.8f;
 
         texWindow.diffuse   = imgWindow.getTexture();
@@ -802,7 +803,7 @@ void texLoad(){
         mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        mluz.emissive  = glm::vec4(0.4, 0.4, 0.4, 1.0);
         mluz.shininess = 1.0;
 
         mFrame.ambient   = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
@@ -819,7 +820,7 @@ void texLoad(){
 
         texAsphalt.diffuse    = asphaltDiffuse.getTexture();
         texAsphalt.specular   = asphaltSpecular.getTexture();
-        texAsphalt.emissive   = imgNoEmissive.getTexture();
+        texAsphalt.emissive   = asphaltDiffuse.getTexture();
         texAsphalt.normal     = asphaltNormal.getTexture();
         texAsphalt.shininess  = 51.2;
 
@@ -831,19 +832,19 @@ void texLoad(){
 
         texTrack.diffuse    = trackDiffuse.getTexture();
         texTrack.specular   = trackSpecular.getTexture();
-        texTrack.emissive   = imgNoEmissive.getTexture();
+        texTrack.emissive   = trackDiffuse.getTexture();
         texTrack.normal     = trackNormal.getTexture();
         texTrack.shininess  = 51.2;
 
         texFloor.diffuse    = floorDiffuse.getTexture();
         texFloor.specular   = floorSpecular.getTexture();
-        texFloor.emissive   = imgNoEmissive.getTexture();
+        texFloor.emissive   = floorDiffuse.getTexture();
         texFloor.normal     = floorNormal.getTexture();
         texFloor.shininess  = 51.2;
 
         texGrass.diffuse    = grassDiffuse.getTexture();
         texGrass.specular   = grassSpecular.getTexture();
-        texGrass.emissive   = imgNoEmissive.getTexture();
+        texGrass.emissive   = grassDiffuse.getTexture();
         texGrass.normal     = grassNormal.getTexture();
         texGrass.shininess  = 51.2;
 
@@ -879,7 +880,7 @@ void texLoad(){
 
         texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
         texConcrete.specular = torreConcreteSpecular.getTexture();
-        texConcrete.emissive   = imgNoEmissive.getTexture();
+        texConcrete.emissive   = torreConcreteDiffuse.getTexture();
         texConcrete.normal     = torreConcreteNormal.getTexture();
         texConcrete.shininess  = 51.2;
 
