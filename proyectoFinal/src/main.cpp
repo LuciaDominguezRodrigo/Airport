@@ -42,6 +42,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model sofa;
    Model chair;
    Model table;
+   Model frame;
 
 
 // Imagenes (texturas)
@@ -104,6 +105,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Light     lightP[NLP];
    Light     lightF[NLF];
    Material  mluz;
+   Material  mFrame;
    Textures  texWindow;
    Textures  texGround;
    Textures  texSky;
@@ -215,6 +217,7 @@ void configScene() {
     sofa.initModel("resources/models/sceneParts/sofa.obj");
     chair.initModel("resources/models/sceneParts/Chair.obj");
     table.initModel("resources/models/sceneParts/SmallTable.obj");
+    frame.initModel("resources/models/geometric/frame.obj");
 
 
     // Imagenes (texturas)
@@ -451,7 +454,7 @@ void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     //timer nubes
-    float rotationSpeedMillis = 1.0f / 1000.0f;  // 2 degrees every 10 milliseconds
+    float rotationSpeedMillis = 1.0f / 1000.0f;  // 1 degree every 1000 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
     glm::mat4 RNubes = glm::rotate(I, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -503,8 +506,6 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 STerminal = glm::scale(I, glm::vec3(5.0, 4.0, 10.0));
-    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 3.995, 10.0));
 
     glm::mat4 SSofa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
     glm::mat4 TSofa = glm::translate(I, glm::vec3(-22.0, -0.20, 17.90));
@@ -531,11 +532,46 @@ void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(table, texTelaSofa, P, V, M * TMesa * SMesa );
 
 
+    glm::mat4 SFrame1 = glm::scale(I, glm::vec3(0.1, 0.181, 0.095));  // Reducir el tamaño del sofá
+    glm::mat4 Tframe;
+    float initialDesZ = 18.15;
+    for(int i=1; i<=5; i++){
+        Tframe = glm::translate(I, glm::vec3(-13.0, 4.201, initialDesZ));
+        drawObjectMat(frame, mFrame, P, V, M * Tframe * SFrame1);
+        initialDesZ -= 4.0;
+    }
+    initialDesZ = 18.15;
+    for(int i=1; i<=5; i++){
+        Tframe = glm::translate(I, glm::vec3(-23.1, 4.203, initialDesZ));
+        drawObjectMat(frame, mFrame, P, V, M * Tframe * SFrame1);
+        initialDesZ -= 4.0;
+    }
 
+    glm::mat4 SFrame2 = glm::scale(I, glm::vec3(0.114, 0.181, 0.095));  // Reducir el tamaño del sofá
+    float initialDesX = -15.45;
+    for(int i=1; i<=2; i++){
+        Tframe = glm::translate(I, glm::vec3(initialDesX, 4.201, 0.0));
+        glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
+        drawObjectMat(frame, mFrame, P, V, M * Tframe * SFrame2 * Ry90);
+        initialDesX -= 5.0;
+    }
 
+    initialDesX = -15.45;
+    for(int i=1; i<=2; i++){
+        Tframe = glm::translate(I, glm::vec3(initialDesX, 4.201, 20.1));
+        glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
+        drawObjectMat(frame, mFrame, P, V, M * Tframe * SFrame2 * Ry90);
+        initialDesX -= 5.0;
+    }
 
+    glm::mat4 STerminal = glm::scale(I, glm::vec3(5.2, 0.3, 10.15));
+    glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 8.2, 10.1));
+    drawObjectMat(cubeTerminal, mFrame, P, V, M * TTerminal * STerminal);
+
+    glm::mat4 STerminal2 = glm::scale(I, glm::vec3(5.0, 4.0, 10.0));
+    glm::mat4 TTerminal2 = glm::translate(I, glm::vec3(-18.0, 3.995, 10.0));
     glDepthMask(GL_FALSE);
-    drawObjectTex(cubeTerminal, texGlass, P, V, M * TTerminal * STerminal);
+    drawObjectTex(cubeTerminal, texGlass, P, V, M * TTerminal2 * STerminal2);
     glDepthMask(GL_TRUE);
 
 }
@@ -654,6 +690,12 @@ void texLoad(){
         mluz.emissive  = glm::vec4(0.3, 0.3, 0.3, 0.3);
         mluz.shininess = 1.0;
 
+        mFrame.ambient   = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
+        mFrame.diffuse   = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
+        mFrame.specular  = glm::vec4(0.774597f, 0.774597f, 0.774597f, 1.0f);
+        mFrame.emissive  = glm::vec4(0.3, 0.3, 0.3, 0.3);
+        mFrame.shininess = 76.8f;
+
         texWindow.diffuse   = imgWindow.getTexture();
         texWindow.specular  = imgWindow.getTexture();
         texWindow.emissive  = imgWindow.getTexture();
@@ -753,6 +795,12 @@ void texLoad(){
         mluz.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
         mluz.shininess = 1.0;
 
+        mFrame.ambient   = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
+        mFrame.diffuse   = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
+        mFrame.specular  = glm::vec4(0.774597f, 0.774597f, 0.774597f, 1.0f);
+        mFrame.emissive  = glm::vec4(0.3, 0.3, 0.3, 0.3);
+        mFrame.shininess = 76.8f;
+
         texWindow.diffuse   = imgWindow.getTexture();
         texWindow.specular  = imgWindow.getTexture();
         texWindow.emissive  = imgWindow.getTexture();
@@ -767,7 +815,7 @@ void texLoad(){
 
         texCammo.diffuse    = cammo.getTexture();
         texCammo.specular   = cammo.getTexture();
-        texCammo.emissive   = imgNoEmissive.getTexture();
+        texCammo.emissive   = cammo.getTexture();
         texCammo.normal     = 0;
         texCammo.shininess  = 51.2;
 
@@ -815,7 +863,7 @@ void texLoad(){
 
         texClouds.diffuse    = imgClouds.getTexture();
         texClouds.specular = imgClouds.getTexture();
-        texClouds.emissive   = imgNoEmissive.getTexture();
+        texClouds.emissive   = imgClouds.getTexture();
         texClouds.normal     = 0;
         texClouds.shininess  = 51.2;
 
