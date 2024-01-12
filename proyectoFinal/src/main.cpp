@@ -104,6 +104,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Light     lightD[NLD];
    Light     lightP[NLP];
    Light     lightF[NLF];
+   Material  mSol;
    Material  mluz;
    Material  mFrame;
    Textures  texWindow;
@@ -480,6 +481,9 @@ void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glDepthMask(GL_FALSE);
     drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
     glDepthMask(GL_TRUE);
+
+    glm::mat4 MSol = glm::translate(I,glm::vec3(0.0, 17.0, 29.0)) * glm::scale(I,glm::vec3(0.3)); //No es ninguna luz, sino únicamente una esfera simulando el sol
+    drawObjectMat(sphere, mSol, P, V, MSol);
 }
 
 void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
@@ -695,6 +699,12 @@ void funCursorPos(GLFWwindow* window, double xpos, double ypos) {
 
 void texLoad(){
     if(nightMode){
+        mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        mSol.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        mSol.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        mSol.emissive  = glm::vec4(0.2, 0.2, 0.2, 1.0);
+        mSol.shininess = 1.0;
+
         mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
@@ -799,6 +809,11 @@ void texLoad(){
 
     }
     else{
+        mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        mSol.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        mSol.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
+        mSol.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        mSol.shininess = 1.0;
 
         mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
         mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
