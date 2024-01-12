@@ -31,7 +31,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 // Modelos
    Model sphere;
    Model plane;
-   Model jet;
+   Model jetBody;
+   Model jetWings;
    Model fence;
    Model cube;
    Model torre1;
@@ -75,7 +76,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture grassSpecular;
    Texture grassNormal;
 
-   Texture jetDiffuse;
+   Texture jetBodyDiffuse;
    Texture jetWingsDiffuse;
 
    Texture fenceDiffuse;
@@ -116,7 +117,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texTrack;
    Textures  texFloor;
    Textures  texGrass;
-   Textures  texJet;
+   Textures  texJetBody;
+   Textures  texJetWings;
    Textures  texFence;
    Textures  texConcrete;
    Textures  texGlass;
@@ -209,7 +211,8 @@ void configScene() {
     cubeTerminal.initModel("resources/models/geometric/cube.obj");
     sphere.initModel("resources/models/geometric/sphere.obj");
     plane.initModel("resources/models/geometric/plane.obj");
-    jet.initModel("resources/models/planes/jet.obj");
+    jetBody.initModel("resources/models/planes/fuselaje.obj");
+    jetWings.initModel("resources/models/planes/alas.obj");
     fence.initModel("resources/models/sceneParts/fence.obj");
     torre1.initModel("resources/models/geometric/cylinder.obj");
     torre2.initModel("resources/models/geometric/cylinder.obj");
@@ -250,7 +253,7 @@ void configScene() {
     grassSpecular.initTexture("resources/textures/cespedEspecular.jpg");
     grassNormal.initTexture("resources/textures/cespedNormal.jpg");
 
-    jetDiffuse.initTexture("resources/textures/jetBodyDiffuse.jpg");
+    jetBodyDiffuse.initTexture("resources/textures/jetBodyDiffuse.jpg");
     jetWingsDiffuse.initTexture("resources/textures/jetWingsDiffuse.jpg");
 
     fenceDiffuse.initTexture("resources/textures/metal02.png");
@@ -406,8 +409,9 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 RJet = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(0,1,0));
     glm::mat4 MDefault = glm::translate(I,glm::vec3(-8.0, 0.24, desZ-1.25)) * glm::scale(I,glm::vec3(0.01));
-    glm::mat4 TJet = glm::translate(I, glm::vec3(-8.0, 0.0, desZ));
-    drawObjectTex(jet, texJet, P, V, M * TJet * Ry90 * RJet * SJet);
+    glm::mat4 TJet = glm::translate(I, glm::vec3(0.0, 0.0, desZ));
+    drawObjectTex(jetBody, texJetBody, P, V, M * TJet * Ry90 * RJet * SJet);
+    drawObjectTex(jetWings, texJetWings, P, V, M * TJet * Ry90 * RJet * SJet);
     drawObjectMat(sphere, mluz, P, V, MDefault);
 }
 
@@ -753,11 +757,17 @@ void texLoad(){
         texGrass.normal     = grassNormal.getTexture();
         texGrass.shininess  = 51.2;
 
-        texJet.diffuse    = jetDiffuse.getTexture();
-        texJet.specular = jetDiffuse.getTexture();
-        texJet.emissive   = imgNoEmissive.getTexture();
-        texJet.normal     = 0;
-        texJet.shininess  = 51.2;
+        texJetBody.diffuse    = jetBodyDiffuse.getTexture();
+        texJetBody.specular = jetBodyDiffuse.getTexture();
+        texJetBody.emissive   = imgNoEmissive.getTexture();
+        texJetBody.normal     = 0;
+        texJetBody.shininess  = 51.2;
+
+        texJetWings.diffuse    = jetWingsDiffuse.getTexture();
+        texJetWings.specular = jetWingsDiffuse.getTexture();
+        texJetWings.emissive   = imgNoEmissive.getTexture();
+        texJetWings.normal     = 0;
+        texJetWings.shininess  = 51.2;
 
         texFence.diffuse    = fenceDiffuse.getTexture();
         texFence.specular   = fenceDiffuse.getTexture();
@@ -863,11 +873,17 @@ void texLoad(){
         texGrass.normal     = grassNormal.getTexture();
         texGrass.shininess  = 51.2;
 
-        texJet.diffuse    = jetDiffuse.getTexture();
-        texJet.specular = jetDiffuse.getTexture();
-        texJet.emissive   = jetDiffuse.getTexture();
-        texJet.normal     = 0;
-        texJet.shininess  = 51.2;
+        texJetBody.diffuse    = jetBodyDiffuse.getTexture();
+        texJetBody.specular = jetBodyDiffuse.getTexture();
+        texJetBody.emissive   = jetBodyDiffuse.getTexture();
+        texJetBody.normal     = 0;
+        texJetBody.shininess  = 51.2;
+
+        texJetWings.diffuse    = jetWingsDiffuse.getTexture();
+        texJetWings.specular = jetWingsDiffuse.getTexture();
+        texJetWings.emissive   = jetWingsDiffuse.getTexture();
+        texJetWings.normal     = 0;
+        texJetWings.shininess  = 51.2;
 
         texFence.diffuse    = fenceDiffuse.getTexture();
         texFence.specular   = fenceDiffuse.getTexture();
