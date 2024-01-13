@@ -44,6 +44,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model chair;
    Model table;
    Model frame;
+   Model farola;
 
 
 // Imagenes (texturas)
@@ -99,8 +100,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 // Luces y materiales
    #define   NLD 1
-   #define   NLP 1
-   #define   NLF 2
+   #define   NLP 3
+   #define   NLF 3
    Light     lightG;
    Light     lightD[NLD];
    Light     lightP[NLP];
@@ -222,6 +223,7 @@ void configScene() {
     chair.initModel("resources/models/sceneParts/Chair.obj");
     table.initModel("resources/models/sceneParts/SmallTable.obj");
     frame.initModel("resources/models/geometric/frame.obj");
+    farola.initModel("resources/models/sceneParts/farola.obj");
 
 
     // Imagenes (texturas)
@@ -278,32 +280,50 @@ void configScene() {
     lightG.ambient = glm::vec3(0.3, 0.3, 0.3);
 
     // Luces direccionales
-    lightD[0].direction = glm::vec3(0.0, 1.0, 0.0);
+    lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
     lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
     lightD[0].diffuse   = glm::vec3( 0.1, 0.1, 0.1);
     lightD[0].specular  = glm::vec3( 0.1, 0.1, 0.1);
 
     // Luces posicionales
-    lightP[0].position    = glm::vec3(0.0, 3.0, 3.0);
+    lightP[0].position    = glm::vec3(19.85, 2.65, 20.0);
     lightP[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
-    lightP[0].diffuse     = glm::vec3(0.9, 0.9, 0.9);
-    lightP[0].specular    = glm::vec3(0.9, 0.9, 0.9);
+    lightP[0].diffuse     = glm::vec3(0.5, 0.5, 0.5);
+    lightP[0].specular    = glm::vec3(0.5, 0.5, 0.5);
     lightP[0].c0          = 1.00;
     lightP[0].c1          = 0.22;
     lightP[0].c2          = 0.20;
 
+    lightP[1].position    = glm::vec3(19.85, 2.65, -20.0);
+    lightP[1].ambient     = glm::vec3(0.2, 0.2, 0.2);
+    lightP[1].diffuse     = glm::vec3(0.5, 0.5, 0.5);
+    lightP[1].specular    = glm::vec3(0.5, 0.5, 0.5);
+    lightP[1].c0          = 1.00;
+    lightP[1].c1          = 0.22;
+    lightP[1].c2          = 0.20;
+
+    lightP[2].position    = glm::vec3(-13.0, 2.65, -7.0);
+    lightP[2].ambient     = glm::vec3(0.2, 0.2, 0.2);
+    lightP[2].diffuse     = glm::vec3(0.5, 0.5, 0.5);
+    lightP[2].specular    = glm::vec3(0.5, 0.5, 0.5);
+    lightP[2].c0          = 1.00;
+    lightP[2].c1          = 0.22;
+    lightP[2].c2          = 0.20;
+
+
     // Luces focales
-    lightF[0].position    = glm::vec3(-2.0,  2.0,  5.0);
-    lightF[0].direction   = glm::vec3( 2.0, -2.0, -5.0);
+    lightF[0].position    = glm::vec3(-18.0, 7.8, 10.1);
+    lightF[0].direction   = glm::vec3(-20.0, -3.2, 10.1);
     lightF[0].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[0].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
     lightF[0].specular    = glm::vec3( 0.9,  0.9,  0.9);
     lightF[0].innerCutOff = 10.0;
-    lightF[0].outerCutOff = lightF[0].innerCutOff + 5.0;
+    lightF[0].outerCutOff = lightF[0].innerCutOff + 1.0;
     lightF[0].c0          = 1.000;
     lightF[0].c1          = 0.090;
     lightF[0].c2          = 0.032;
-    lightF[1].position    = glm::vec3( 2.0,  2.0,  5.0);
+
+    lightF[1].position    = glm::vec3(-18.0, 7.8, 15.1);
     lightF[1].direction   = glm::vec3(-2.0, -2.0, -5.0);
     lightF[1].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[1].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
@@ -313,6 +333,17 @@ void configScene() {
     lightF[1].c0          = 1.000;
     lightF[1].c1          = 0.090;
     lightF[1].c2          = 0.032;
+
+    lightF[2].position    = glm::vec3(0.0, 0.24, desZ-1.25);
+    lightF[2].direction   = glm::vec3(0.0, -0.24, desZ+1.25);
+    lightF[2].ambient     = glm::vec3( 0.2,  0.2,  0.2);
+    lightF[2].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[2].specular    = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[2].innerCutOff = 10.0;
+    lightF[2].outerCutOff = lightF[0].innerCutOff + 1.0;
+    lightF[2].c0          = 1.000;
+    lightF[2].c1          = 0.090;
+    lightF[2].c2          = 0.032;
 
 
 
@@ -369,7 +400,8 @@ void renderScene() {
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
     glm::mat4 SGrass = glm::scale    (I, glm::vec3(25.0, 1.0, 25.0));
-    glm::mat4 TGrass = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
+    glm::mat4 TGrass1 = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
+    glm::mat4 TGrass2 = glm::translate(I, glm::vec3(0.0, -1.00, 0.0));
     glm::mat4 Rx180 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(1,0,0));
 
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
@@ -387,9 +419,15 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TTerminal = glm::translate(I, glm::vec3(-18.0, 0.0, 10.0));
     glm::mat4 STerminal = glm::scale    (I, glm::vec3(5.0, 1.0, 10.0));
 
+    glm::mat4 TFarola1 = glm::translate(I, glm::vec3(19.85, 0.0, 20.0));
+    glm::mat4 TFarola2 = glm::translate(I, glm::vec3(19.85, 0.0, -20.0));
+    glm::mat4 TFarola3 = glm::translate(I, glm::vec3(-13.0, 0.0, -7.0));
+    glm::mat4 SFarola = glm::scale    (I, glm::vec3(0.15, 0.15, 0.15));
+
     drawCielo(P, V, M);
 
-    drawObjectTex(plane, texGrass, P, V, M * TGrass * SGrass * Rx180); //Suelo de césped
+    drawObjectTex(plane, texGrass, P, V, M * TGrass1 * SGrass); //Suelo de césped
+    drawObjectTex(plane, texGrass, P, V, M * TGrass2 * SGrass * Rx180); //Suelo de césped invertido
 
     drawObjectTex(plane, texTrack, P, V, M * TTrack1 * SAsphalt * Ry90); //Pistas de aterrizaje
     drawObjectTex(plane, texTrack, P, V, M * TTrack2 * SAsphalt * Ry90);
@@ -399,6 +437,10 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(plane, texAsphalt, P, V, M * TAsphalt2 * SAsphalt3); //Pista de aparcamiento
 
     drawObjectTex(plane, texFloor, P, V, M * TTerminal * STerminal); //Suelo de la terminal planta 0
+
+    drawObjectTex(farola, texConcrete, P, V, M * TFarola1 * SFarola); //Farola esquina 1
+    drawObjectTex(farola, texConcrete, P, V, M * TFarola2 * SFarola); //Farola esquina 2
+    drawObjectTex(farola, texConcrete, P, V, M * TFarola3 * SFarola); //Farola esquina 3
 
     drawVallas(P, V, M);
 }
@@ -412,7 +454,6 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TJet = glm::translate(I, glm::vec3(0.0, 0.0, desZ));
     drawObjectTex(jetBody, texJetBody, P, V, M * TJet * Ry90 * RJet * SJet);
     drawObjectTex(jetWings, texJetWings, P, V, M * TJet * Ry90 * RJet * SJet);
-    drawObjectMat(sphere, mluz, P, V, MDefault);
 }
 
 
@@ -603,14 +644,7 @@ void setLights(glm::mat4 P, glm::mat4 V) {
 
     for(int i=0; i<NLP; i++) {
         glm::mat4 MDefault = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1));
-        glm::mat4 MLight0 = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.3));
-        if(i==0){
-            drawObjectMat(sphere, mluz, P, V, MLight0);
-        }else{
             drawObjectMat(sphere, mluz, P, V, MDefault);
-        }
-
-
     }
 
     for(int i=0; i<NLF; i++) {
