@@ -11,6 +11,7 @@ void setLights (glm::mat4 P, glm::mat4 V);
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawObjectTex(Model model, Textures textures, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
+void movingLightsLoad();
 void texLoad();
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
@@ -286,7 +287,7 @@ void configScene() {
     lightD[0].specular  = glm::vec3( 0.1, 0.1, 0.1);
 
     // Luces posicionales
-    lightP[0].position    = glm::vec3(19.85, 2.65, 20.0);
+    lightP[0].position    = glm::vec3(19.85, 2.65, 20.0); //Farola 1 (esquina)
     lightP[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
     lightP[0].diffuse     = glm::vec3(0.5, 0.5, 0.5);
     lightP[0].specular    = glm::vec3(0.5, 0.5, 0.5);
@@ -294,7 +295,7 @@ void configScene() {
     lightP[0].c1          = 0.22;
     lightP[0].c2          = 0.20;
 
-    lightP[1].position    = glm::vec3(19.85, 2.65, -20.0);
+    lightP[1].position    = glm::vec3(19.85, 2.65, -20.0); //Farola 2 (esquina)
     lightP[1].ambient     = glm::vec3(0.2, 0.2, 0.2);
     lightP[1].diffuse     = glm::vec3(0.5, 0.5, 0.5);
     lightP[1].specular    = glm::vec3(0.5, 0.5, 0.5);
@@ -302,7 +303,7 @@ void configScene() {
     lightP[1].c1          = 0.22;
     lightP[1].c2          = 0.20;
 
-    lightP[2].position    = glm::vec3(-13.0, 2.65, -7.0);
+    lightP[2].position    = glm::vec3(-13.0, 2.65, -7.0); //Farola 3 (entre torre y terminal)
     lightP[2].ambient     = glm::vec3(0.2, 0.2, 0.2);
     lightP[2].diffuse     = glm::vec3(0.5, 0.5, 0.5);
     lightP[2].specular    = glm::vec3(0.5, 0.5, 0.5);
@@ -334,18 +335,7 @@ void configScene() {
     lightF[1].c1          = 0.090;
     lightF[1].c2          = 0.032;
 
-    lightF[2].position    = glm::vec3(0.0, 0.24, desZ-1.25);
-    lightF[2].direction   = glm::vec3(0.0, -0.24, desZ+1.25);
-    lightF[2].ambient     = glm::vec3( 0.2,  0.2,  0.2);
-    lightF[2].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[2].specular    = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[2].innerCutOff = 10.0;
-    lightF[2].outerCutOff = lightF[0].innerCutOff + 1.0;
-    lightF[2].c0          = 1.000;
-    lightF[2].c1          = 0.090;
-    lightF[2].c2          = 0.032;
-
-
+    movingLightsLoad();
 
  // Materiales
     texLoad();
@@ -355,6 +345,8 @@ void configScene() {
 void renderScene() {
 
     texLoad();
+    movingLightsLoad();
+
  // Borramos el buffer de color
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -968,5 +960,17 @@ void texLoad(){
         texTelaSofa.shininess  = 51.2;
 
     }
+}
 
+void movingLightsLoad(){
+    lightF[2].position    = glm::vec3(0.0, 0.24, desZ-1.25); //Luz colocada en el morro del avion
+    lightF[2].direction   = glm::vec3(0.0, -0.24, desZ+1.25);
+    lightF[2].ambient     = glm::vec3( 0.2,  0.2,  0.2);
+    lightF[2].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[2].specular    = glm::vec3( 0.9,  0.9,  0.9);
+    lightF[2].innerCutOff = 10.0;
+    lightF[2].outerCutOff = lightF[0].innerCutOff + 1.0;
+    lightF[2].c0          = 1.000;
+    lightF[2].c1          = 0.090;
+    lightF[2].c2          = 0.032;
 }
