@@ -47,12 +47,13 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model frame;
    Model farola;
    Model helice;
+   Model ruedas;
+   Model soporteRuedas;
 
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
    Texture imgMiddleEmissive;
-
 
    Texture imgWindow;
 
@@ -99,6 +100,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture sofaSpecular;
    Texture sofaNormal;
 
+   Texture ruedasDiffuse;
+   Texture ruedasNormal;
+
 
 // Luces y materiales
    #define   NLD 1
@@ -127,6 +131,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texGlass;
    Textures  texMetalverde;
    Textures  texTelaSofa;
+   Textures  texRuedas;
 
 
 // Modo día/noche
@@ -227,6 +232,8 @@ void configScene() {
     frame.initModel("resources/models/geometric/frame.obj");
     farola.initModel("resources/models/sceneParts/farola.obj");
     helice.initModel("resources/models/planeParts/helice.obj");
+    ruedas.initModel("resources/models/planeParts/ruedas.obj");
+    soporteRuedas.initModel("resources/models/planeParts/soporteRuedas.obj");
 
 
     // Imagenes (texturas)
@@ -278,6 +285,8 @@ void configScene() {
     sofaDiffuse.initTexture("resources/textures/sofaDiffuse.png");
     sofaNormal.initTexture("resources/textures/sofaNormal.jpg");
 
+    ruedasDiffuse.initTexture("resources/textures/tire01.png");
+    ruedasNormal.initTexture("resources/textures/tireN01.png");
 
     // Luz ambiental global
     lightG.ambient = glm::vec3(0.3, 0.3, 0.3);
@@ -450,15 +459,23 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 THelice1 = glm::translate(I, glm::vec3(0.32, 0.385, 0.25+desZ));
     glm::mat4 THelice2 = glm::translate(I, glm::vec3(-0.32, 0.385, 0.25+desZ));
 
+    glm::mat4 SRuedas = glm::scale    (I, glm::vec3(0.05, 0.05, 0.05));
+    glm::mat4 TRuedas1 = glm::translate(I, glm::vec3(0.25, 0.03, desZ));
+    glm::mat4 TRuedas2 = glm::translate(I, glm::vec3(-0.25, 0.03, desZ));
+
     //timmer antena
     float rotationSpeedMillis = 2.0f / 5.0f;  // 2 degrees every 10 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
-    glm::mat4 RHelice= glm::rotate   (I, rotationAngle, glm::vec3(0,0,1));
+    glm::mat4 RHelice = glm::rotate   (I, rotationAngle, glm::vec3(0,0,1));
 
     drawObjectTex(jetBody, texJetBody, P, V, M * TJet * Ry180 * RJet * SJet);
     drawObjectTex(jetWings, texJetWings, P, V, M * TJet * Ry180 * RJet * SJet);
     drawObjectTex(helice, texCammo, P, V, M * THelice1 * RHelice * Ry180 * SHelice);
     drawObjectTex(helice, texCammo, P, V, M * THelice2 * RHelice * Ry180 * SHelice);
+    drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas1 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas1 * SRuedas);
+    drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas2 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas2 * SRuedas);
 
 
 }
@@ -858,6 +875,11 @@ void texLoad(){
         texTelaSofa.normal = sofaNormal.getTexture();
         texTelaSofa.shininess  = 51.2;
 
+        texRuedas.diffuse = ruedasDiffuse.getTexture();
+        texRuedas.specular = ruedasDiffuse.getTexture();
+        texRuedas.emissive = imgNoEmissive.getTexture();
+        texRuedas.normal = ruedasNormal.getTexture();
+        texRuedas.shininess  = 51.2;
     }
     else{
         mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
@@ -928,7 +950,7 @@ void texLoad(){
 
         texFence.diffuse    = fenceDiffuse.getTexture();
         texFence.specular   = fenceDiffuse.getTexture();
-        texFence.emissive   = imgMiddleEmissive.getTexture();
+        texFence.emissive   = fenceDiffuse.getTexture();
         texFence.normal     = fenceNormal.getTexture();
         texFence.shininess  = 11.2;
 
@@ -973,6 +995,12 @@ void texLoad(){
         texTelaSofa.emissive   = sofaDiffuse.getTexture();
         texTelaSofa.normal = sofaNormal.getTexture();
         texTelaSofa.shininess  = 51.2;
+
+        texRuedas.diffuse = ruedasDiffuse.getTexture();
+        texRuedas.specular = ruedasDiffuse.getTexture();
+        texRuedas.emissive = ruedasDiffuse.getTexture();
+        texRuedas.normal = ruedasNormal.getTexture();
+        texRuedas.shininess  = 51.2;
 
     }
 }
