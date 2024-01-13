@@ -46,6 +46,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model table;
    Model frame;
    Model farola;
+   Model helice;
 
 
 // Imagenes (texturas)
@@ -225,6 +226,7 @@ void configScene() {
     table.initModel("resources/models/sceneParts/SmallTable.obj");
     frame.initModel("resources/models/geometric/frame.obj");
     farola.initModel("resources/models/sceneParts/farola.obj");
+    helice.initModel("resources/models/planeParts/helice.obj");
 
 
     // Imagenes (texturas)
@@ -441,11 +443,24 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 SJet = glm::scale    (I, glm::vec3(0.002, 0.002, 0.002));
     glm::mat4 RJet = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
-    glm::mat4 Ry90 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(0,1,0));
+    glm::mat4 Ry180 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(0,1,0));
     glm::mat4 MDefault = glm::translate(I,glm::vec3(-8.0, 0.24, desZ-1.25)) * glm::scale(I,glm::vec3(0.01));
     glm::mat4 TJet = glm::translate(I, glm::vec3(0.0, 0.0, desZ));
-    drawObjectTex(jetBody, texJetBody, P, V, M * TJet * Ry90 * RJet * SJet);
-    drawObjectTex(jetWings, texJetWings, P, V, M * TJet * Ry90 * RJet * SJet);
+    glm::mat4 SHelice = glm::scale    (I, glm::vec3(0.091, 0.091, 0.091));
+    glm::mat4 THelice1 = glm::translate(I, glm::vec3(0.32, 0.385, 0.25+desZ));
+    glm::mat4 THelice2 = glm::translate(I, glm::vec3(-0.32, 0.385, 0.25+desZ));
+
+    //timmer antena
+    float rotationSpeedMillis = 2.0f / 5.0f;  // 2 degrees every 10 milliseconds
+    float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
+    glm::mat4 RHelice= glm::rotate   (I, rotationAngle, glm::vec3(0,0,1));
+
+    drawObjectTex(jetBody, texJetBody, P, V, M * TJet * Ry180 * RJet * SJet);
+    drawObjectTex(jetWings, texJetWings, P, V, M * TJet * Ry180 * RJet * SJet);
+    drawObjectTex(helice, texCammo, P, V, M * THelice1 * RHelice * Ry180 * SHelice);
+    drawObjectTex(helice, texCammo, P, V, M * THelice2 * RHelice * Ry180 * SHelice);
+
+
 }
 
 

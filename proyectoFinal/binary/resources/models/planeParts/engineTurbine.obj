@@ -1,6 +1,5 @@
 # Blender 3.3.1
 # www.blender.org
-mtllib engineTurbine.mtl
 o Rolamento
 v 0.030476 0.153211 -0.093920
 v -0.000000 0.156213 -0.093920
