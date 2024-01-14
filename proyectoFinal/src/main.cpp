@@ -49,6 +49,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model helice;
    Model ruedas;
    Model soporteRuedas;
+   Model soporteRuedaDelantera;
 
 
 // Imagenes (texturas)
@@ -136,13 +137,16 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 // Modo día/noche
    bool nightMode = false;
+   bool firstPersonView = false;
 
 // Viewport
    int w = 500;
    int h = 500;
 
 // Animaciones
-   float desZ = 0.0;
+    float desX = 0.0;
+    float desY = 0.0;
+    float desZ = 0.0;
 
 // Movimiento de camara
    float fovy   = 60.0;
@@ -153,6 +157,9 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
     float x   = 0.0;
     float y =  6.0;
     float z =  -6.0;
+
+//Angulo de rotacion de las ruedas del avion
+    float rotAngle = 0.0;
 
 int main() {
 
@@ -234,6 +241,7 @@ void configScene() {
     helice.initModel("resources/models/planeParts/helice.obj");
     ruedas.initModel("resources/models/planeParts/ruedas.obj");
     soporteRuedas.initModel("resources/models/planeParts/soporteRuedas.obj");
+    soporteRuedaDelantera.initModel("resources/models/planeParts/soporteRuedaDelantera.obj");
 
 
     // Imagenes (texturas)
@@ -450,6 +458,8 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+    M *= glm::translate(I, glm::vec3(-6.0, 0.0, 4.0)) * glm::rotate(I, glm::radians(180.0f), glm::vec3(0,1,0));
+
     glm::mat4 SJet = glm::scale    (I, glm::vec3(0.002, 0.002, 0.002));
     glm::mat4 RJet = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
     glm::mat4 Ry180 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(0,1,0));
@@ -460,8 +470,11 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 THelice2 = glm::translate(I, glm::vec3(-0.32, 0.385, 0.25+desZ));
 
     glm::mat4 SRuedas = glm::scale    (I, glm::vec3(0.05, 0.05, 0.05));
-    glm::mat4 TRuedas1 = glm::translate(I, glm::vec3(0.25, 0.03, desZ));
-    glm::mat4 TRuedas2 = glm::translate(I, glm::vec3(-0.25, 0.03, desZ));
+    glm::mat4 TRuedas1 = glm::translate(I, glm::vec3(0.25, 0.05, desZ));
+    glm::mat4 TRuedas2 = glm::translate(I, glm::vec3(-0.25, 0.05, desZ));
+    glm::mat4 TRuedaDel = glm::translate(I, glm::vec3(0.0, 0.05, desZ-1.00));
+
+    glm::mat4 RRuedas = glm::rotate   (I, glm::radians(rotAngle), glm::vec3(1,0,0));
 
     //timmer antena
     float rotationSpeedMillis = 2.0f / 5.0f;  // 2 degrees every 10 milliseconds
@@ -472,10 +485,13 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(jetWings, texJetWings, P, V, M * TJet * Ry180 * RJet * SJet);
     drawObjectTex(helice, texCammo, P, V, M * THelice1 * RHelice * Ry180 * SHelice);
     drawObjectTex(helice, texCammo, P, V, M * THelice2 * RHelice * Ry180 * SHelice);
+
     drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas1 * SRuedas);
-    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas1 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas1 * SRuedas * RRuedas);
     drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas2 * SRuedas);
-    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas2 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas2 * SRuedas * RRuedas);
+    drawObjectTex(soporteRuedaDelantera, texFence, P, V, M * TRuedaDel * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedaDel * SRuedas * RRuedas);
 
 
 }
@@ -714,11 +730,16 @@ void funFramebufferSize(GLFWwindow* window, int width, int height) {
 }
 
 void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
-
+    std::cout <<"Z: " << desZ << std::endl;
     switch(key) {
-        case GLFW_KEY_Z:
-            if(mods==GLFW_MOD_SHIFT) desZ -= desZ > -24.0f ? 0.1f : 0.0f;
-            else                     desZ += desZ <   5.0f ? 0.1f : 0.0f;
+        //Controles del avion
+        case GLFW_KEY_I:
+            desZ -= desZ > -20.6f ? 0.1f : 0.0f;
+            rotAngle += 45.0f;
+            break;
+        case GLFW_KEY_K:
+            desZ += desZ < 21.4f ? 0.1f : 0.0f;
+            rotAngle -= 45.0f;
             break;
 
         //Auxiliar
@@ -728,6 +749,8 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
         case GLFW_KEY_D:  x += 1.0f;   break;
         case GLFW_KEY_E:  z += 1.0f;   break;
         case GLFW_KEY_Q:  z -= 1.0f;   break;
+
+        //Modo noche
         case GLFW_KEY_N:
             if(action == GLFW_PRESS){
                 nightMode = !nightMode;
@@ -1006,7 +1029,7 @@ void texLoad(){
 }
 
 void movingLightsLoad(){
-    lightF[2].position    = glm::vec3(0.0, 0.24, desZ-1.25); //Luz colocada en el morro del avion
+    lightF[2].position    = glm::vec3(-6.0, 0.24, 5.25-desZ); //Luz colocada en el morro del avion
     lightF[2].direction   = glm::vec3(0.0, -0.24, desZ+1.25);
     lightF[2].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[2].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
@@ -1017,3 +1040,6 @@ void movingLightsLoad(){
     lightF[2].c1          = 0.090;
     lightF[2].c2          = 0.032;
 }
+
+
+
