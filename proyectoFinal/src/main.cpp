@@ -160,7 +160,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 //Angulo de rotacion de las ruedas del avion
     float wheelRotAngle = 0.0;
-    float planeRotAngle = 0.0;
+    float planeRotAngle = 90.0;
+    glm::mat4 planeRotationMatrix;
 
 int main() {
 
@@ -334,7 +335,7 @@ void configScene() {
 
     // Luces focales
     lightF[0].position    = glm::vec3(-18.0, 7.8, 10.1);
-    lightF[0].direction   = glm::vec3(-20.0, -3.2, 10.1);
+    lightF[0].direction   = glm::vec3(-18.0, 0.0, 10.1);
     lightF[0].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[0].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
     lightF[0].specular    = glm::vec3( 0.9,  0.9,  0.9);
@@ -345,7 +346,7 @@ void configScene() {
     lightF[0].c2          = 0.032;
 
     lightF[1].position    = glm::vec3(-18.0, 7.8, 15.1);
-    lightF[1].direction   = glm::vec3(-2.0, -2.0, -5.0);
+    lightF[1].direction   = glm::vec3(-18.0, 0.0, 15.1);
     lightF[1].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[1].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
     lightF[1].specular    = glm::vec3( 0.9,  0.9,  0.9);
@@ -459,7 +460,9 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    M *= glm::translate(I, glm::vec3(-6.0+desX, 0.0, 4.0+desZ)) * translate(I, glm::vec3(3.0, 0.0, 0.0)) * glm::rotate(I, glm::radians(planeRotAngle), glm::vec3(0,1,0)) * translate(I, glm::vec3(-3.0, 0.0, 0.0)) * glm::rotate(I, glm::radians(180.0f), glm::vec3(0,1,0));
+
+    planeRotationMatrix = glm::translate(I, glm::vec3(-6.0+desX, 0.0, 4.0+desZ)) * glm::rotate(I, glm::radians(planeRotAngle-90.0f), glm::vec3(0,1,0)) * glm::rotate(I, glm::radians(180.0f), glm::vec3(0,1,0));
+    M *= planeRotationMatrix;
 
     glm::mat4 SJet = glm::scale    (I, glm::vec3(0.002, 0.002, 0.002));
     glm::mat4 RJet = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
@@ -689,10 +692,15 @@ void setLights(glm::mat4 P, glm::mat4 V) {
     }
 
     for(int i=0; i<NLF; i++) {
-        glm::mat4 M = glm::translate(I,lightF[i].position) * glm::scale(I,glm::vec3(0.025));
+        glm::mat4 M;
+        if(i == 2){
+            M = planeRotationMatrix * glm::translate(I,glm::vec3(0.0, 0.24, -1.25)) * glm::scale(I,glm::vec3(0.025));
+        } else{
+            M = glm::translate(I,lightF[i].position) * glm::scale(I,glm::vec3(0.025));
+        }
+
         drawObjectMat(sphere, mluz, P, V, M);
     }
-
 }
 
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M) {
@@ -731,24 +739,60 @@ void funFramebufferSize(GLFWwindow* window, int width, int height) {
 }
 
 void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
-    std::cout <<"Z: " << desZ << std::endl;
     switch(key) {
         //Controles del avion
         case GLFW_KEY_I:
-            desZ += desZ > -20.6f ? 0.1f : 0.0f;
+            //desZ += desZ > -20.6f ? 0.1f : 0.0f;
             wheelRotAngle += 45.0f;
-            break;
+
+            if(planeRotAngle == 90.0f){
+                desZ += 1.0f;
+            }
+            else if(planeRotAngle == 180.0f){
+                desX += 1.0f;
+            }
+            else if(planeRotAngle == 270.0f){
+                desZ -= 1.0f;
+            }
+            else if(planeRotAngle == 0.0f){
+                desX -= 1.0f;
+            }
+        break;
+
         case GLFW_KEY_K:
-            desZ -= desZ < 21.4f ? 0.1f : 0.0f;
-            wheelRotAngle -= 45.0f;
-            break;
+            wheelRotAngle += 45.0f;
+            if(planeRotAngle == 90.0f){
+                desZ -= 1.0f;
+            }
+            else if(planeRotAngle == 180.0f){
+                desX -= 1.0f;
+            }
+            else if(planeRotAngle == 270.0f){
+                desZ += 1.0f;
+            }
+            else if(planeRotAngle == 0.0f){
+                desX += 1.0f;
+            }
+        break;
         case GLFW_KEY_J:
             wheelRotAngle -= 45.0f;
-            planeRotAngle += 5.0f;
+            if(action == GLFW_PRESS) {
+                planeRotAngle += 90.0f;
+            }
+            if(planeRotAngle == 360.0f){
+                planeRotAngle = 0.0f;
+            }
+            std::cout <<"planeRotAngle: " << planeRotAngle << std::endl;
             break;
         case GLFW_KEY_L:
             wheelRotAngle -= 45.0f;
-            planeRotAngle -= 5.0f;
+            if(action == GLFW_PRESS) {
+                planeRotAngle -= 90.0f;
+            }
+            if(planeRotAngle == -90.0f){
+                planeRotAngle = 270.0f;
+            }
+            std::cout <<"planeRotAngle: " << planeRotAngle << std::endl;
             break;
 
         //Auxiliar
@@ -1038,7 +1082,7 @@ void texLoad(){
 }
 
 void movingLightsLoad(){
-    lightF[2].position    = glm::vec3(-6.0, 0.24, 5.25+desZ); //Luz colocada en el morro del avion
+    lightF[2].position    = glm::vec3(-6.0+desX, 0.24, 5.25+desZ); //Luz colocada en el morro del avion
     lightF[2].direction   = glm::vec3(0.0, -0.24, desZ+1.25);
     lightF[2].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[2].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
