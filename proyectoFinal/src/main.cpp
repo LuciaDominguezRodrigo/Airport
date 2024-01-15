@@ -298,14 +298,7 @@ void configScene() {
     ruedasDiffuse.initTexture("resources/textures/tire01.png");
     ruedasNormal.initTexture("resources/textures/tireN01.png");
 
-    // Luz ambiental global
-    lightG.ambient = glm::vec3(0.9, 0.9, 0.9);
-
-    // Luces direccionales
-    lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
-    lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
-    lightD[0].diffuse   = glm::vec3( 0.1, 0.1, 0.1);
-    lightD[0].specular  = glm::vec3( 0.1, 0.1, 0.1);
+    staticLightsLoad();
 
     // Luces posicionales
     lightP[0].position    = glm::vec3(19.85, 2.65, 20.0); //Farola 1 (esquina)
@@ -356,7 +349,6 @@ void configScene() {
     lightF[1].c1          = 0.090;
     lightF[1].c2          = 0.032;
 
-    staticLightsLoad();
     movingLightsLoad();
 
  // Materiales y texturas
@@ -957,10 +949,24 @@ void funCursorPos(GLFWwindow* window, double xpos, double ypos) {
 
 void staticLightsLoad(){
     if(nightMode){
+        // Luz ambiental global
+        lightG.ambient = glm::vec3(0.3, 0.3, 0.3);
 
+        // Luces direccionales
+        lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
+        lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
+        lightD[0].diffuse   = glm::vec3( 0.1, 0.1, 0.1);
+        lightD[0].specular  = glm::vec3( 0.1, 0.1, 0.1);
     }
     else{
+        // Luz ambiental global
+        lightG.ambient = glm::vec3(0.9, 0.9, 0.9);
 
+        // Luces direccionales
+        lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
+        lightD[0].ambient   = glm::vec3( 0.1, 0.1, 0.1);
+        lightD[0].diffuse   = glm::vec3( 0.7, 0.7, 0.7);
+        lightD[0].specular  = glm::vec3( 0.7, 0.7, 0.7);
     }
 }
 
