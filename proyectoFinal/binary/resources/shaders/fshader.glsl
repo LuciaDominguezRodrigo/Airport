@@ -37,7 +37,6 @@ uniform Light    ulightG;
 uniform Light    ulightD[NLD];
 uniform Light    ulightP[NLP];
 uniform Light    ulightF[NLF];
-uniform Light    uredLight;
 uniform Material umaterial;
 uniform Textures utextures;
 uniform bool     uWithMaterials;
@@ -80,10 +79,7 @@ void main() {
     vec3 color = material.emissive.rgb + ulightG.ambient * material.ambient.rgb;
     for(int i=0; i<NLD; i++) color += funDirectional(ulightD[i],material,N,V);
     for(int i=0; i<NLP; i++) color += funPositional (ulightP[i],material,N,V);
-
-
-
-
+    for(int i=0; i<NLF; i++) color += funFocal      (ulightF[i],material,N,V);
 
     outColor = vec4(color, material.diffuse.a);
 

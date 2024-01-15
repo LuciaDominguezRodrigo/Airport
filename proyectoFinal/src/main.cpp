@@ -12,7 +12,7 @@ void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm
 void drawObjectTex(Model model, Textures textures, glm::mat4 P, glm::mat4 V, glm::mat4 M);
 
 void movingLightsLoad();
-void texLoad();
+void staticLightsLoad();
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
@@ -299,7 +299,7 @@ void configScene() {
     ruedasNormal.initTexture("resources/textures/tireN01.png");
 
     // Luz ambiental global
-  //  lightG.ambient = glm::vec3(0.9, 0.9, 0.9);
+    lightG.ambient = glm::vec3(0.9, 0.9, 0.9);
 
     // Luces direccionales
     lightD[0].direction = glm::vec3(0.0, -1.0, 0.0);
@@ -335,7 +335,7 @@ void configScene() {
 
     // Luces focales
     lightF[0].position    = glm::vec3(-18.0, 7.8, 10.1);
-    lightF[0].direction   = glm::vec3(-18.0, 0.0, 10.1) - lightF[0].position ;
+    lightF[0].direction   = glm::vec3(-18.0, 0.0, 10.1) - lightF[0].position;
     lightF[0].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[0].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
     lightF[0].specular    = glm::vec3( 0.9,  0.9,  0.9);
@@ -346,26 +346,146 @@ void configScene() {
     lightF[0].c2          = 0.032;
 
     lightF[1].position    = glm::vec3(-18.0, 7.8, 15.1);
-    lightF[1].direction   = glm::vec3(-18.0, 0.0, 15.1) -  lightF[1].position ;
+    lightF[1].direction   = glm::vec3(-18.0, 0.0, 15.1) -  lightF[1].position;
     lightF[1].ambient     = glm::vec3( 0.2,  0.2,  0.2);
     lightF[1].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
     lightF[1].specular    = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[1].innerCutOff = 5.0;
+    lightF[1].innerCutOff = 10.0;
     lightF[1].outerCutOff = lightF[1].innerCutOff + 1.0;
     lightF[1].c0          = 1.000;
     lightF[1].c1          = 0.090;
     lightF[1].c2          = 0.032;
 
+    staticLightsLoad();
     movingLightsLoad();
 
- // Materiales
-    texLoad();
+ // Materiales y texturas
+
+    mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mSol.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mSol.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mSol.emissive  = glm::vec4(0.2, 0.2, 0.2, 1.0);
+    mSol.shininess = 1.0;
+
+    mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mluz.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
+    mluz.shininess = 1.0;
+
+    mFrame.ambient   = glm::vec4(0.19225f, 0.19225f, 0.19225f, 1.0f );
+    mFrame.diffuse   = glm::vec4(0.50754f, 0.50754f, 0.50754f, 1.0f);
+    mFrame.specular  = glm::vec4(0.508273f, 0.508273f, 0.508273f, 1.0f);
+    mFrame.emissive  = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    mFrame.shininess = 51.2f;
+
+    texWindow.diffuse   = imgWindow.getTexture();
+    texWindow.specular  = imgWindow.getTexture();
+    texWindow.emissive  = imgNoEmissive.getTexture();
+    texWindow.normal    = 0;
+    texWindow.shininess = 10.0;
+
+    texAsphalt.diffuse    = asphaltDiffuse.getTexture();
+    texAsphalt.specular   = asphaltSpecular.getTexture();
+    texAsphalt.emissive   = imgNoEmissive.getTexture();
+    texAsphalt.normal     = 0;
+    texAsphalt.shininess  = 51.2;
+
+    texCammo.diffuse    = cammo.getTexture();
+    texCammo.specular   = cammo.getTexture();
+    texCammo.emissive   = imgNoEmissive.getTexture();
+    texCammo.normal     = 0;
+    texCammo.shininess  = 51.2;
+
+    texTrack.diffuse    = trackDiffuse.getTexture();
+    texTrack.specular   = trackSpecular.getTexture();
+    texTrack.emissive   = imgNoEmissive.getTexture();
+    texTrack.normal     = 0;
+    texTrack.shininess  = 51.2;
+
+    texFloor.diffuse    = floorDiffuse.getTexture();
+    texFloor.specular   = floorSpecular.getTexture();
+    texFloor.emissive   = imgNoEmissive.getTexture();
+    texFloor.normal     = 0;
+    texFloor.shininess  = 51.2;
+
+    texGrass.diffuse    = grassDiffuse.getTexture();
+    texGrass.specular   = grassSpecular.getTexture();
+    texGrass.emissive   = imgNoEmissive.getTexture();
+    texGrass.normal     = 0;
+    texGrass.shininess  = 51.2;
+
+    texJetBody.diffuse    = jetBodyDiffuse.getTexture();
+    texJetBody.specular = jetBodyDiffuse.getTexture();
+    texJetBody.emissive   = imgNoEmissive.getTexture();
+    texJetBody.normal     = 0;
+    texJetBody.shininess  = 51.2;
+
+    texJetWings.diffuse    = jetWingsDiffuse.getTexture();
+    texJetWings.specular = jetWingsDiffuse.getTexture();
+    texJetWings.emissive   = imgNoEmissive.getTexture();
+    texJetWings.normal     = 0;
+    texJetWings.shininess  = 51.2;
+
+    texFence.diffuse    = fenceDiffuse.getTexture();
+    texFence.specular   = fenceDiffuse.getTexture();
+    texFence.emissive   = imgNoEmissive.getTexture();
+    texFence.normal     = 0;
+    texFence.shininess  = 11.2;
+
+    texGround.diffuse    = imgGround.getTexture();
+    texGround.specular = imgGround.getTexture();
+    texGround.emissive   = imgNoEmissive.getTexture();
+    texGround.normal     = 0;
+    texGround.shininess  = 51.2;
+
+    texSky.diffuse    = imgSkyDay.getTexture();
+    texSky.specular = imgSkyDay.getTexture();
+    texSky.emissive   = imgNoEmissive.getTexture();
+    texSky.normal     = 0;
+    texSky.shininess  = 51.2;
+
+    texClouds.diffuse    = imgClouds.getTexture();
+    texClouds.specular = imgClouds.getTexture();
+    texClouds.emissive   = imgNoEmissive.getTexture();
+    texClouds.normal     = 0;
+    texClouds.shininess  = 51.2;
+
+    texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
+    texConcrete.specular = torreConcreteSpecular.getTexture();
+    texConcrete.emissive   = imgNoEmissive.getTexture();
+    texConcrete.normal     = 0;
+    texConcrete.shininess  = 51.2;
+
+    texGlass.diffuse   = imgGlass.getTexture();
+    texGlass.specular  = imgGlass.getTexture();
+    texGlass.emissive  = imgNoEmissive.getTexture();
+    texGlass.normal    = 0;
+    texGlass.shininess = 10.0;
+
+    texMetalverde.diffuse = metAntenaDiffuse.getTexture();
+    texMetalverde.specular= metAntenaSpecular.getTexture();
+    texMetalverde.emissive   = imgNoEmissive.getTexture();
+    texMetalverde.normal = 0;
+    texMetalverde.shininess  = 51.2;
+
+    texTelaSofa.diffuse = sofaDiffuse.getTexture();
+    texTelaSofa.specular= sofaSpecular.getTexture();
+    texTelaSofa.emissive   = imgNoEmissive.getTexture();
+    texTelaSofa.normal = 0;
+    texTelaSofa.shininess  = 51.2;
+
+    texRuedas.diffuse = ruedasDiffuse.getTexture();
+    texRuedas.specular = ruedasDiffuse.getTexture();
+    texRuedas.emissive = imgNoEmissive.getTexture();
+    texRuedas.normal = 0;
+    texRuedas.shininess  = 51.2;
 
 }
 
 void renderScene() {
 
-    texLoad();
+    staticLightsLoad();
     movingLightsLoad();
 
  // Borramos el buffer de color
@@ -440,7 +560,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawCielo(P, V, M);
 
     drawObjectTex(plane, texGrass, P, V, M * TGrass1 * SGrass); //Suelo de césped
-    drawObjectTex(plane, texGrass, P, V, M * TGrass2 * SGrass * Rx180); //Suelo de césped invertido
+    //drawObjectTex(plane, texGrass, P, V, M * TGrass2 * SGrass * Rx180); //Suelo de césped invertido
 
     drawObjectTex(plane, texTrack, P, V, M * TTrack1 * SAsphalt * Ry90); //Pistas de aterrizaje
     drawObjectTex(plane, texTrack, P, V, M * TTrack2 * SAsphalt * Ry90);
@@ -835,250 +955,11 @@ void funCursorPos(GLFWwindow* window, double xpos, double ypos) {
 
 }
 
-void texLoad(){
+void staticLightsLoad(){
     if(nightMode){
-        lightG.ambient = glm::vec3(0.3, 0.3, 0.3);
-        mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mSol.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mSol.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mSol.emissive  = glm::vec4(0.2, 0.2, 0.2, 1.0);
-        mSol.shininess = 1.0;
 
-        mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        mluz.shininess = 1.0;
-
-        mFrame.ambient   = glm::vec4(0.02f, 0.02f, 0.02f, 1.0f);
-        mFrame.diffuse   = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
-        mFrame.specular  = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
-        mFrame.emissive  = glm::vec4(0.03, 0.03, 0.03, 0.3);
-        mFrame.shininess = 76.8f;
-
-        texWindow.diffuse   = imgWindow.getTexture();
-        texWindow.specular  = imgWindow.getTexture();
-        texWindow.emissive  = imgWindow.getTexture();
-        texWindow.normal    = 0;
-        texWindow.shininess = 10.0;
-
-        texAsphalt.diffuse    = asphaltDiffuse.getTexture();
-        texAsphalt.specular   = asphaltSpecular.getTexture();
-        texAsphalt.emissive   = imgNoEmissive.getTexture();
-        texAsphalt.normal     = 0;
-        texAsphalt.shininess  = 51.2;
-
-        texCammo.diffuse    = cammo.getTexture();
-        texCammo.specular   = cammo.getTexture();
-        texCammo.emissive   = imgNoEmissive.getTexture();
-        texCammo.normal     = 0;
-        texCammo.shininess  = 51.2;
-
-        texTrack.diffuse    = trackDiffuse.getTexture();
-        texTrack.specular   = trackSpecular.getTexture();
-        texTrack.emissive   = imgNoEmissive.getTexture();
-        texTrack.normal     = 0;
-        texTrack.shininess  = 51.2;
-
-        texFloor.diffuse    = floorDiffuse.getTexture();
-        texFloor.specular   = floorSpecular.getTexture();
-        texFloor.emissive   = imgNoEmissive.getTexture();
-        texFloor.normal     = 0;
-        texFloor.shininess  = 51.2;
-
-        texGrass.diffuse    = grassDiffuse.getTexture();
-        texGrass.specular   = grassSpecular.getTexture();
-        texGrass.emissive   = imgNoEmissive.getTexture();
-        texGrass.normal     = 0;
-        texGrass.shininess  = 51.2;
-
-        texJetBody.diffuse    = jetBodyDiffuse.getTexture();
-        texJetBody.specular = jetBodyDiffuse.getTexture();
-        texJetBody.emissive   = imgNoEmissive.getTexture();
-        texJetBody.normal     = 0;
-        texJetBody.shininess  = 51.2;
-
-        texJetWings.diffuse    = jetWingsDiffuse.getTexture();
-        texJetWings.specular = jetWingsDiffuse.getTexture();
-        texJetWings.emissive   = imgNoEmissive.getTexture();
-        texJetWings.normal     = 0;
-        texJetWings.shininess  = 51.2;
-
-        texFence.diffuse    = fenceDiffuse.getTexture();
-        texFence.specular   = fenceDiffuse.getTexture();
-        texFence.emissive   = imgNoEmissive.getTexture();
-        texFence.normal     = 0;
-        texFence.shininess  = 11.2;
-
-        texGround.diffuse    = imgGround.getTexture();
-        texGround.specular = imgGround.getTexture();
-        texGround.emissive   = imgNoEmissive.getTexture();
-        texGround.normal     = 0;
-        texGround.shininess  = 51.2;
-
-        texSky.diffuse    = imgSkyDay.getTexture();
-        texSky.specular = imgSkyDay.getTexture();
-        texSky.emissive   = imgNoEmissive.getTexture();
-        texSky.normal     = 0;
-        texSky.shininess  = 51.2;
-
-        texClouds.diffuse    = imgClouds.getTexture();
-        texClouds.specular = imgClouds.getTexture();
-        texClouds.emissive   = imgNoEmissive.getTexture();
-        texClouds.normal     = 0;
-        texClouds.shininess  = 51.2;
-
-        texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
-        texConcrete.specular = torreConcreteSpecular.getTexture();
-        texConcrete.emissive   = imgNoEmissive.getTexture();
-        texConcrete.normal     = 0;
-        texConcrete.shininess  = 51.2;
-
-        texGlass.diffuse   = imgGlass.getTexture();
-        texGlass.specular  = imgGlass.getTexture();
-        texGlass.emissive  = imgNoEmissive.getTexture();
-        texGlass.normal    = 0;
-        texGlass.shininess = 10.0;
-
-        texMetalverde.diffuse = metAntenaDiffuse.getTexture();
-        texMetalverde.specular= metAntenaSpecular.getTexture();
-        texMetalverde.emissive   = imgNoEmissive.getTexture();
-        texMetalverde.normal = 0;
-        texMetalverde.shininess  = 51.2;
-
-        texTelaSofa.diffuse = sofaDiffuse.getTexture();
-        texTelaSofa.specular= sofaSpecular.getTexture();
-        texTelaSofa.emissive   = imgNoEmissive.getTexture();
-        texTelaSofa.normal = 0;
-        texTelaSofa.shininess  = 51.2;
-
-        texRuedas.diffuse = ruedasDiffuse.getTexture();
-        texRuedas.specular = ruedasDiffuse.getTexture();
-        texRuedas.emissive = imgNoEmissive.getTexture();
-        texRuedas.normal = 0;
-        texRuedas.shininess  = 51.2;
     }
     else{
-        lightG.ambient = glm::vec3(0.9, 0.9, 0.9);
-        mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mSol.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mSol.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mSol.emissive  = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        mSol.shininess = 1.0;
-
-        mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-        mluz.emissive  = glm::vec4(0.4, 0.4, 0.4, 1.0);
-        mluz.shininess = 1.0;
-
-        mFrame.ambient   = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
-        mFrame.diffuse   = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
-        mFrame.specular  = glm::vec4(0.774597f, 0.774597f, 0.774597f, 1.0f);
-        mFrame.emissive  = glm::vec4(0.3, 0.3, 0.3, 0.3);
-        mFrame.shininess = 76.8f;
-
-        texWindow.diffuse   = imgWindow.getTexture();
-        texWindow.specular  = imgWindow.getTexture();
-        texWindow.emissive  = imgNoEmissive.getTexture();
-        texWindow.normal    = 0;
-        texWindow.shininess = 10.0;
-
-        texAsphalt.diffuse    = asphaltDiffuse.getTexture();
-        texAsphalt.specular   = asphaltSpecular.getTexture();
-        texAsphalt.emissive   = imgNoEmissive.getTexture();
-        texAsphalt.normal     = 0;
-        texAsphalt.shininess  = 51.2;
-
-        texCammo.diffuse    = cammo.getTexture();
-        texCammo.specular   = cammo.getTexture();
-        texCammo.emissive   = imgNoEmissive.getTexture();
-        texCammo.normal     = 0;
-        texCammo.shininess  = 51.2;
-
-        texTrack.diffuse    = trackDiffuse.getTexture();
-        texTrack.specular   = trackSpecular.getTexture();
-        texTrack.emissive   = imgNoEmissive.getTexture();
-        texTrack.normal     = 0;
-        texTrack.shininess  = 51.2;
-
-        texFloor.diffuse    = floorDiffuse.getTexture();
-        texFloor.specular   = floorSpecular.getTexture();
-        texFloor.emissive   = imgNoEmissive.getTexture();
-        texFloor.normal     = 0;
-        texFloor.shininess  = 51.2;
-
-        texGrass.diffuse    = grassDiffuse.getTexture();
-        texGrass.specular   = grassSpecular.getTexture();
-        texGrass.emissive   = imgNoEmissive.getTexture();
-        texGrass.normal     = 0;
-        texGrass.shininess  = 51.2;
-
-        texJetBody.diffuse    = jetBodyDiffuse.getTexture();
-        texJetBody.specular = jetBodyDiffuse.getTexture();
-        texJetBody.emissive   = jetBodyDiffuse.getTexture();
-        texJetBody.normal     = 0;
-        texJetBody.shininess  = 51.2;
-
-        texJetWings.diffuse    = jetWingsDiffuse.getTexture();
-        texJetWings.specular = jetWingsDiffuse.getTexture();
-        texJetWings.emissive   = jetWingsDiffuse.getTexture();
-        texJetWings.normal     = 0;
-        texJetWings.shininess  = 51.2;
-
-        texFence.diffuse    = fenceDiffuse.getTexture();
-        texFence.specular   = fenceDiffuse.getTexture();
-        texFence.emissive   = imgNoEmissive.getTexture();
-        texFence.normal     = 0;
-        texFence.shininess  = 11.2;
-
-        texGround.diffuse    = imgGround.getTexture();
-        texGround.specular = imgGround.getTexture();
-        texGround.emissive   = imgNoEmissive.getTexture();
-        texGround.normal     = 0;
-        texGround.shininess  = 51.2;
-
-        texSky.diffuse    = imgSkyDay.getTexture();
-        texSky.specular = imgSkyDay.getTexture();
-        texSky.emissive   = imgNoEmissive.getTexture();
-        texSky.normal     = 0;
-        texSky.shininess  = 51.2;
-
-        texClouds.diffuse    = imgClouds.getTexture();
-        texClouds.specular = imgClouds.getTexture();
-        texClouds.emissive   = imgClouds.getTexture();
-        texClouds.normal     = 0;
-        texClouds.shininess  = 51.2;
-
-        texConcrete.diffuse    = torreConcreteDiffuse.getTexture();
-        texConcrete.specular = torreConcreteSpecular.getTexture();
-        texConcrete.emissive   = imgNoEmissive.getTexture();
-        texConcrete.normal     = 0;
-        texConcrete.shininess  = 51.2;
-
-        texGlass.diffuse   = imgGlass.getTexture();
-        texGlass.specular  = imgGlass.getTexture();
-        texGlass.emissive  = imgNoEmissive.getTexture();
-        texGlass.normal    = 0;
-        texGlass.shininess = 10.0;
-
-        texMetalverde.diffuse = metAntenaDiffuse.getTexture();
-        texMetalverde.specular= metAntenaSpecular.getTexture();
-        texMetalverde.emissive   = imgNoEmissive.getTexture();
-        texMetalverde.normal = 0;
-        texMetalverde.shininess  = 51.2;
-
-        texTelaSofa.diffuse = sofaDiffuse.getTexture();
-        texTelaSofa.specular= sofaSpecular.getTexture();
-        texTelaSofa.emissive   = imgNoEmissive.getTexture();
-        texTelaSofa.normal = 0;
-        texTelaSofa.shininess  = 51.2;
-
-        texRuedas.diffuse = ruedasDiffuse.getTexture();
-        texRuedas.specular = ruedasDiffuse.getTexture();
-        texRuedas.emissive = imgNoEmissive.getTexture();
-        texRuedas.normal = 0;
-        texRuedas.shininess  = 51.2;
 
     }
 }
