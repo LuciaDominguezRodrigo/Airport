@@ -109,7 +109,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 // Luces y materiales
    #define   NLD 1
-   #define   NLP 3
+   #define   NLP 4
    #define   NLF 2
    Light     lightG;
    Light     lightD[NLD];
@@ -884,7 +884,12 @@ void setLights(glm::mat4 P, glm::mat4 V) {
     for(int i=0; i<NLF; i++) shaders.setLight("ulightF["+toString(i)+"]",lightF[i]);
 
     for(int i=0; i<NLP; i++) {
-        glm::mat4 M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1));
+        glm::mat4 M;
+        if(i == 3){
+            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.025));
+        } else{
+            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1));
+        }
         drawObjectMat(sphere, mluz, P, V, M);
     }
 
@@ -1064,7 +1069,13 @@ void staticLightsLoad(){
 }
 
 void movingLightsLoad(){
-
+    lightP[3].position    = glm::vec3(-6.0+desX, 0.24, 5.25+desZ); //Luz del morro del avión
+    lightP[3].ambient     = glm::vec3(0.2, 0.2, 0.2);
+    lightP[3].diffuse     = glm::vec3(0.7, 0.7, 0.7);
+    lightP[3].specular    = glm::vec3(0.7, 0.7, 0.7);
+    lightP[3].c0          = 1.00;
+    lightP[3].c1          = 0.22;
+    lightP[3].c2          = 0.20;
 }
 
 
