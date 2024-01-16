@@ -163,6 +163,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
     float planeRotAngle = 90.0;
     glm::mat4 planeRotationMatrix;
 
+//Movimiento del tren de aterrizaje
+    int contador = 0;
+    bool gearUp = false;
+    float actualTime;
+
 int main() {
 
  // Inicializamos GLFW
@@ -590,6 +595,9 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 TRuedas2 = glm::translate(I, glm::vec3(-0.25, 0.05, 0.00));
     glm::mat4 TRuedaDel = glm::translate(I, glm::vec3(0.0, 0.05, -1.00));
 
+    glm::mat4 TAux1 = glm::translate(I, glm::vec3(0.0, -0.16, 0.0)); //Matrices auxiliares de traslación para poder rotar el tren de aterrizaje sobre su eje
+    glm::mat4 TAux2 = glm::translate(I, glm::vec3(0.0, 0.16, 0.0));
+
     glm::mat4 RRuedas = glm::rotate   (I, glm::radians(wheelRotAngle), glm::vec3(1, 0, 0));
 
     //timmer antena
@@ -602,12 +610,60 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(helice, texCammo, P, V, M * THelice1 * RHelice * Ry180 * SHelice);
     drawObjectTex(helice, texCammo, P, V, M * THelice2 * RHelice * Ry180 * SHelice);
 
-    drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas1 * SRuedas);
-    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas1 * SRuedas * RRuedas);
-    drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas2 * SRuedas);
-    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas2 * SRuedas * RRuedas);
-    drawObjectTex(soporteRuedaDelantera, texFence, P, V, M * TRuedaDel * SRuedas);
-    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedaDel * SRuedas * RRuedas);
+    glm::mat4 RTrenAterrizaje1;
+    glm::mat4 RTrenAterrizaje2;
+    glm::mat4 RTrenAterrizajeDel;
+    std::cout << "gearUp: " << gearUp << std::endl;
+    if(gearUp){
+        std::cout << "actualTime: " << contador << std::endl;
+        if(actualTime == 0.0){
+            actualTime = glfwGetTime();
+            contador = 0;
+        }
+        float rotationSpeedMillis = 2.0f / 25.0f;  // 2 degrees every 10 milliseconds
+        float rotationAngle = glm::radians(fmod((glfwGetTime()-actualTime) * rotationSpeedMillis * 1000.0f, 105.0f));
+        if(rotationAngle >= 1.8f){
+            contador += 1;
+        }
+        if (contador == 0){
+            RTrenAterrizaje1 = glm::rotate   (I, -rotationAngle, glm::vec3(0, 0, 1));
+            RTrenAterrizaje2 = glm::rotate   (I, rotationAngle, glm::vec3(0, 0, 1));
+            RTrenAterrizajeDel = glm::rotate   (I, -rotationAngle-0.02f, glm::vec3(1, 0, 0)); //Ajuste de 0.02 radianes (aproximadamente 1.2 grados) respecto al original debido a problema de oculatación de la rueda delantera
+        }else{
+            RTrenAterrizaje1 = glm::rotate   (I, glm::radians(-105.0f), glm::vec3(0, 0, 1));
+            RTrenAterrizaje2 = glm::rotate   (I, glm::radians(105.0f), glm::vec3(0, 0, 1));
+            RTrenAterrizajeDel = glm::rotate   (I, glm::radians(-105.0f)-0.02f, glm::vec3(1, 0, 0));
+        }
+    }
+    else{
+        if(actualTime == 0.0){
+            actualTime = glfwGetTime();
+            contador = 0;
+        }
+        float rotationSpeedMillis = 2.0f / 25.0f;  // 2 degrees every 10 milliseconds
+        float rotationAngle = glm::radians(fmod((glfwGetTime()-actualTime) * rotationSpeedMillis * 1000.0f, 105.0f));
+        if(rotationAngle <= 0.2f){
+            contador += 1;
+        }
+        if (contador == 0){
+            RTrenAterrizaje1 = glm::rotate   (I, -(1.83f - rotationAngle), glm::vec3(0, 0, 1));
+            RTrenAterrizaje2 = glm::rotate   (I, 1.83f - rotationAngle, glm::vec3(0, 0, 1));
+            RTrenAterrizajeDel = glm::rotate   (I, -(1.83f - rotationAngle), glm::vec3(1, 0, 0));
+        }else{
+            RTrenAterrizaje1 = glm::rotate   (I, glm::radians(-0.0f), glm::vec3(0, 0, 1));
+            RTrenAterrizaje2 = glm::rotate   (I, glm::radians(0.0f), glm::vec3(0, 0, 1));
+            RTrenAterrizajeDel = glm::rotate   (I, glm::radians(-0.0f), glm::vec3(1, 0, 0));
+            actualTime = 0.0;
+        }
+    }
+
+    drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas1 * TAux2 * RTrenAterrizaje1 * TAux1 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas1 * TAux2 * RTrenAterrizaje1 * TAux1 * SRuedas * RRuedas);
+    drawObjectTex(soporteRuedas, texFence, P, V, M * TRuedas2 * TAux2 * RTrenAterrizaje2 * TAux1 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedas2 * TAux2 * RTrenAterrizaje2 * TAux1 * SRuedas * RRuedas);
+
+    drawObjectTex(soporteRuedaDelantera, texFence, P, V, M * TRuedaDel * TAux2 * RTrenAterrizajeDel * TAux1 * SRuedas);
+    drawObjectTex(ruedas, texRuedas, P, V, M * TRuedaDel * TAux2 * RTrenAterrizajeDel * TAux1 * SRuedas * RRuedas);
 
 
 }
@@ -924,6 +980,13 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
             break;
 
+        case GLFW_KEY_G:
+            if(action == GLFW_PRESS){
+                gearUp = !gearUp;
+            } else{
+                gearUp = gearUp;
+            }
+            break;
     }
 
 }
