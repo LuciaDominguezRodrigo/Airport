@@ -104,6 +104,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture ruedasDiffuse;
    Texture ruedasNormal;
 
+   Texture flapsDiffuse;
+
 
 // Luces y materiales
    #define   NLD 1
@@ -133,6 +135,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texMetalverde;
    Textures  texTelaSofa;
    Textures  texRuedas;
+   Textures  texFlaps;
 
 
 // Modo día/noche
@@ -166,6 +169,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 //Movimiento del tren de aterrizaje
     int contador = 0;
     bool gearUp = false;
+    bool flapsUp = false;
     float actualTime;
 
 int main() {
@@ -302,6 +306,8 @@ void configScene() {
 
     ruedasDiffuse.initTexture("resources/textures/tire01.png");
     ruedasNormal.initTexture("resources/textures/tireN01.png");
+
+    flapsDiffuse.initTexture("resources/textures/jetFlapsDiffuse.png");
 
     staticLightsLoad();
 
@@ -477,6 +483,12 @@ void configScene() {
     texRuedas.emissive = imgNoEmissive.getTexture();
     texRuedas.normal = 0;
     texRuedas.shininess  = 51.2;
+
+    texFlaps.diffuse = flapsDiffuse.getTexture();
+    texFlaps.specular = flapsDiffuse.getTexture();
+    texFlaps.emissive = imgNoEmissive.getTexture();
+    texFlaps.normal = 0;
+    texFlaps.shininess  = 51.2;
 
 }
 
@@ -663,7 +675,25 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(soporteRuedaDelantera, texFence, P, V, M * TRuedaDel * TAux2 * RTrenAterrizajeDel * TAux1 * SRuedas);
     drawObjectTex(ruedas, texRuedas, P, V, M * TRuedaDel * TAux2 * RTrenAterrizajeDel * TAux1 * SRuedas * RRuedas);
 
+    glm::mat4 RFlaps1 = glm::rotate   (I, glm::radians(10.0f) , glm::vec3(0, 1, 0));
+    glm::mat4 RFlaps1Inv = glm::rotate   (I, glm::radians(-10.0f) , glm::vec3(0, 1, 0));
+    glm::mat4 RFlaps2 = glm::rotate   (I, glm::radians(-4.0f) , glm::vec3(0, 0, 1));
+    glm::mat4 RFlaps2Inv = glm::rotate   (I, glm::radians(4.0f) , glm::vec3(0, 0, 1));
+    glm::mat4 SFlaps = glm::scale(I, glm::vec3(0.25, 0.5, 0.05));
+    glm::mat4 TFlaps = glm::translate(I, glm::vec3(-1.0, 0.28, 0.35));
+    glm::mat4 TFlapsInv = glm::translate(I, glm::vec3(1.0, 0.28, 0.35));
+    glm::mat4 TAux1Flaps = glm::translate(I, glm::vec3(0.0, 0.0, 0.05));
+    glm::mat4 TAux2Flaps = glm::translate(I, glm::vec3(0.0, 0.0, -0.05));
+    glm::mat4 RAuxFlaps;
 
+    if(flapsUp){
+        RAuxFlaps = glm::rotate   (I, glm::radians(-45.0f) , glm::vec3(1,0,0));
+    }else{
+        RAuxFlaps = I;
+    }
+
+    drawObjectTex(plane, texMetalverde ,P, V, M * TFlaps * RFlaps2 * RFlaps1 * TAux2Flaps * RAuxFlaps * TAux1Flaps * SFlaps);
+    drawObjectTex(plane, texMetalverde ,P, V, M * TFlapsInv * RFlaps2Inv * RFlaps1Inv * TAux2Flaps * RAuxFlaps * TAux1Flaps * SFlaps);
 }
 
 
@@ -981,6 +1011,14 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
                 gearUp = !gearUp;
             } else{
                 gearUp = gearUp;
+            }
+            break;
+
+        case GLFW_KEY_F:
+            if(action == GLFW_PRESS){
+                flapsUp = !flapsUp;
+            } else{
+                flapsUp = flapsUp;
             }
             break;
     }
