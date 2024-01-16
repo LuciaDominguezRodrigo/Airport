@@ -613,9 +613,7 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 RTrenAterrizaje1;
     glm::mat4 RTrenAterrizaje2;
     glm::mat4 RTrenAterrizajeDel;
-    std::cout << "gearUp: " << gearUp << std::endl;
     if(gearUp){
-        std::cout << "actualTime: " << contador << std::endl;
         if(actualTime == 0.0){
             actualTime = glfwGetTime();
             contador = 0;
@@ -950,7 +948,6 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             if(planeRotAngle == 360.0f){
                 planeRotAngle = 0.0f;
             }
-            std::cout <<"planeRotAngle: " << planeRotAngle << std::endl;
             break;
         case GLFW_KEY_L:
             wheelRotAngle -= 45.0f;
@@ -960,7 +957,6 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             if(planeRotAngle == -90.0f){
                 planeRotAngle = 270.0f;
             }
-            std::cout <<"planeRotAngle: " << planeRotAngle << std::endl;
             break;
 
         //Auxiliar
