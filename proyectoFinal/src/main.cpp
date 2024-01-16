@@ -110,7 +110,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 // Luces y materiales
    #define   NLD 1
    #define   NLP 3
-   #define   NLF 3
+   #define   NLF 2
    Light     lightG;
    Light     lightD[NLD];
    Light     lightP[NLP];
@@ -877,26 +877,22 @@ void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void setLights(glm::mat4 P, glm::mat4 V) {
+
     shaders.setLight("ulightG",lightG);
     for(int i=0; i<NLD; i++) shaders.setLight("ulightD["+toString(i)+"]",lightD[i]);
     for(int i=0; i<NLP; i++) shaders.setLight("ulightP["+toString(i)+"]",lightP[i]);
     for(int i=0; i<NLF; i++) shaders.setLight("ulightF["+toString(i)+"]",lightF[i]);
 
     for(int i=0; i<NLP; i++) {
-        glm::mat4 MDefault = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1));
-            drawObjectMat(sphere, mluz, P, V, MDefault);
+        glm::mat4 M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1));
+        drawObjectMat(sphere, mluz, P, V, M);
     }
 
     for(int i=0; i<NLF; i++) {
-        glm::mat4 M;
-        if(i == 2){
-            M = planeRotationMatrix * glm::translate(I,glm::vec3(0.0, 0.24, -1.25)) * glm::scale(I,glm::vec3(0.025));
-        } else{
-            M = glm::translate(I,lightF[i].position) * glm::scale(I,glm::vec3(0.025));
-        }
-
+        glm::mat4 M = glm::translate(I,lightF[i].position) * glm::scale(I,glm::vec3(0.025));
         drawObjectMat(sphere, mluz, P, V, M);
     }
+
 }
 
 void drawObjectMat(Model model, Material material, glm::mat4 P, glm::mat4 V, glm::mat4 M) {
@@ -1068,16 +1064,7 @@ void staticLightsLoad(){
 }
 
 void movingLightsLoad(){
-    lightF[2].position    = glm::vec3(-6.0+desX, 0.24, 5.25+desZ); //Luz colocada en el morro del avion
-    lightF[2].direction   = glm::vec3(0.0, -0.24, desZ+1.25);
-    lightF[2].ambient     = glm::vec3( 0.2,  0.2,  0.2);
-    lightF[2].diffuse     = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[2].specular    = glm::vec3( 0.9,  0.9,  0.9);
-    lightF[2].innerCutOff = 10.0;
-    lightF[2].outerCutOff = lightF[0].innerCutOff + 1.0;
-    lightF[2].c0          = 1.000;
-    lightF[2].c1          = 0.090;
-    lightF[2].c2          = 0.032;
+
 }
 
 
