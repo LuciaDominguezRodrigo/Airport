@@ -979,6 +979,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             if(planeRotAngle == 360.0f){
                 planeRotAngle = 0.0f;
             }
+            std::cout << "planeRotAngle: " << planeRotAngle << std::endl;
             break;
         case GLFW_KEY_L:
             wheelRotAngle -= 45.0f;
@@ -988,6 +989,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             if(planeRotAngle == -90.0f){
                 planeRotAngle = 270.0f;
             }
+            std::cout << "planeRotAngle: " << planeRotAngle << std::endl;
             break;
 
         //Auxiliar
@@ -1069,7 +1071,18 @@ void staticLightsLoad(){
 }
 
 void movingLightsLoad(){
-    lightP[3].position    = glm::vec3(-6.0+desX, 0.24, 5.25+desZ); //Luz del morro del avión
+    if(planeRotAngle == 90.0f){ //OK
+        lightP[3].position    = glm::vec3(-6.0+desX, 0.24, 5.25+desZ); //Luz del morro del avión
+    }
+    else if (planeRotAngle == 180.0f){
+        lightP[3].position    = glm::vec3(-4.7+desX, 0.24, 4.0+desZ); //Luz del morro del avión
+    }
+    else if (planeRotAngle == 270.0f){ //OK
+        lightP[3].position    = glm::vec3(-6.0+desX, 0.24, 2.75+desZ); //Luz del morro del avión
+    }
+    else if (planeRotAngle == 0.0f){
+        lightP[3].position    = glm::vec3(-7.2+desX, 0.24, 4.0+desZ); //Luz del morro del avión
+    }
     lightP[3].ambient     = glm::vec3(0.2, 0.2, 0.2);
     lightP[3].diffuse     = glm::vec3(0.7, 0.7, 0.7);
     lightP[3].specular    = glm::vec3(0.7, 0.7, 0.7);
