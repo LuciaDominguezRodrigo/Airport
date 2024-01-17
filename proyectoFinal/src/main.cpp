@@ -543,7 +543,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
     glm::mat4 SGrass = glm::scale    (I, glm::vec3(25.0, 1.0, 25.0));
     glm::mat4 TGrass1 = glm::translate(I, glm::vec3(0.0, -0.01, 0.0));
-    glm::mat4 TGrass2 = glm::translate(I, glm::vec3(0.0, -1.00, 0.0));
+    glm::mat4 TGrass2 = glm::translate(I, glm::vec3(0.0, -0.02, 0.0));
     glm::mat4 Rx180 = glm::rotate   (I, glm::radians(180.0f), glm::vec3(1,0,0));
 
     glm::mat4 Ry90 = glm::rotate   (I, glm::radians(90.0f), glm::vec3(0,1,0));
@@ -569,7 +569,7 @@ void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawCielo(P, V, M);
 
     drawObjectTex(plane, texGrass, P, V, M * TGrass1 * SGrass); //Suelo de césped
-    //drawObjectTex(plane, texGrass, P, V, M * TGrass2 * SGrass * Rx180); //Suelo de césped invertido
+    drawObjectTex(plane, texGrass, P, V, M * TGrass2 * SGrass * Rx180); //Suelo de césped invertido
 
     drawObjectTex(plane, texTrack, P, V, M * TTrack1 * SAsphalt * Ry90); //Pistas de aterrizaje
     drawObjectTex(plane, texTrack, P, V, M * TTrack2 * SAsphalt * Ry90);
