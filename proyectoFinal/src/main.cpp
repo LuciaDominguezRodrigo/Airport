@@ -41,18 +41,18 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model sofa;
    Model chair;
    Model table;
-   Model frame;
+   Model frame; //Marco del que se construye la estructura metalica de la terminal
    Model farola;
    Model helice;
    Model ruedas;
    Model soporteRuedas;
-   Model soporteRuedaDelantera;
+   Model soporteRuedaDelantera; //Mismo modelo que soporteRuedas, pero con la barra central de aluminio un poco mas alargada
 
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
 
-   Texture imgGround; //Imagen de fondo
+   Texture imgGround; //Imagen de fondo de vegetacion
    Texture imgSkyDay;
    Texture imgSkyNight;
    Texture imgClouds;
@@ -75,13 +75,13 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture grassSpecular;
    Texture grassNormal;
 
-   Texture jetBodyDiffuse;
-   Texture jetWingsDiffuse;
+   Texture jetBodyDiffuse; //Wrap del fuselaje del avion
+   Texture jetWingsDiffuse; //Wrap del modulo de alas y motores del avion
 
    Texture fenceDiffuse;
    Texture fenceNormal;
 
-   Texture torreConcreteDiffuse;
+   Texture torreConcreteDiffuse; //Hormigon de la torre de control
    Texture torreConcreteSpecular;
    Texture torreConcreteNormal;
 
@@ -127,23 +127,21 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Textures  texMetalverde;
    Textures  texTelaSofa;
    Textures  texRuedas;
-   Textures  texFlaps;
 
 
 // Modo día/noche
    bool nightMode = false;
-   bool firstPersonView = false;
 
 // Viewport
    int w = 500;
    int h = 500;
 
-// Animaciones
+// Desplazamiento por el mundo
     float desX = 0.0;
     float desY = 0.0;
     float desZ = 0.0;
 
-// Movimiento de camara
+// Movimiento orbitalde camara
    float fovy   = 60.0;
    float alphaX =  0.0;
    float alphaY =  0.0;
@@ -161,10 +159,12 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 //Movimiento del tren de aterrizaje
     int contador = 0;
     bool gearUp = false;
+    float actualTime;
 
 //Movimiento de flaps
     bool flapsUp = false;
-    float actualTime;
+
+//Activar o desactivar el movimiento orbital de la cámara centrado en el origen con el ratón
     bool mouseMovement = true;
 
 int main() {
@@ -253,7 +253,7 @@ void configScene() {
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
 
     imgGround.initTexture("resources/textures/fondoSinCielo.png");
-    imgSkyDay.initTexture("resources/textures/14.png"); //Color del cielo en función propia (prueba)
+    imgSkyDay.initTexture("resources/textures/14.png");
     imgSkyNight.initTexture("resources/textures/4.png");
     imgClouds.initTexture("resources/textures/nubes.png");
 
@@ -300,7 +300,7 @@ void configScene() {
 
     staticLightsLoad();
 
-    // Luces posicionales
+    // Luces posicionales (farolas)
     lightP[0].position    = glm::vec3(19.85, 2.65, 20.0); //Farola 1 (esquina)
     lightP[0].ambient     = glm::vec3(0.2, 0.2, 0.2);
     lightP[0].diffuse     = glm::vec3(0.5, 0.5, 0.5);
@@ -719,7 +719,7 @@ void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 }
 
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    //timer nubes
+    //Timer nubes
     float rotationSpeedMillis = 1.0f / 1000.0f;  // 1 degree every 1000 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
     glm::mat4 RNubes = glm::rotate(I, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -750,7 +750,7 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(cone, texConcrete, P, V, M * T3 * S3);
 
 
-    //timmer antena
+    //Timer antena
     float rotationSpeedMillis = 2.0f / 100.0f;  // 2 degrees every 100 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
 
@@ -769,7 +769,7 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 S2 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0));
     glm::mat4 T2 = glm::translate(I, glm::vec3(-16.0, 16.26, -10.0));
     glDepthMask(GL_FALSE);
-    drawObjectTex(torre1, texGlass, P, V, M * T2 * S2);
+    drawObjectTex(torre1, texGlass, P, V, M * T2 * S2); //Vidrio de la torre de control
     glDepthMask(GL_TRUE);
 
 }
@@ -856,7 +856,7 @@ void setLights(glm::mat4 P, glm::mat4 V) {
         if(i == 3){
             M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.025)); //Luz situada en el morro del avión
         } else{
-            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1)); //Luces de las farolas
+            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1)); //Luces de las farolas, algo más grandes
         }
         drawObjectMat(sphere, mluz, P, V, M);
     }
@@ -906,7 +906,7 @@ void funFramebufferSize(GLFWwindow* window, int width, int height) {
 void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
     switch(key) {
         //Controles del avion
-        case GLFW_KEY_I:
+        case GLFW_KEY_I: //Hacia delante
             wheelRotAngle += 45.0f;
 
             if(planeRotAngle == 90.0f){
@@ -923,7 +923,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
         break;
 
-        case GLFW_KEY_K:
+        case GLFW_KEY_K: //Hacia atras
             wheelRotAngle += 45.0f;
             if(planeRotAngle == 90.0f){
                 desZ -= 1.0f;
@@ -939,7 +939,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
         break;
 
-        case GLFW_KEY_J:
+        case GLFW_KEY_J: //Rotación de 90º a la izquierda (desde el ángulo actual)
             wheelRotAngle -= 45.0f;
             if(action == GLFW_PRESS) {
                 planeRotAngle += 90.0f;
@@ -949,7 +949,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
             break;
 
-        case GLFW_KEY_L:
+        case GLFW_KEY_L: //Rotación de 90º a la derecha (desde el ángulo actual)
             wheelRotAngle -= 45.0f;
             if(action == GLFW_PRESS) {
                 planeRotAngle -= 90.0f;
@@ -959,13 +959,13 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
             break;
 
-        //Auxiliar: Movimiento libre por el mundo
-        case GLFW_KEY_W:  y += 1.0f;   break;
-        case GLFW_KEY_S:  y -= 1.0f;   break;
-        case GLFW_KEY_A:  x -= 1.0f;   break;
-        case GLFW_KEY_D:  x += 1.0f;   break;
-        case GLFW_KEY_E:  z += 1.0f;   break;
-        case GLFW_KEY_Q:  z -= 1.0f;   break;
+        //Auxiliar: Movimiento libre por el mundo con centro en (0,0,0)
+        case GLFW_KEY_W:  y += 1.0f;   break; //Aumentar y de la cámara
+        case GLFW_KEY_S:  y -= 1.0f;   break; //Disminuir y de la cámara
+        case GLFW_KEY_D:  x += 1.0f;   break; //Aumentar x de la cámara
+        case GLFW_KEY_A:  x -= 1.0f;   break; //Disminuir x de la cámara
+        case GLFW_KEY_E:  z += 1.0f;   break; //Aumentar z de la cámara
+        case GLFW_KEY_Q:  z -= 1.0f;   break; //Disminuir z de la cámara
 
         //Modo noche
         case GLFW_KEY_N:
