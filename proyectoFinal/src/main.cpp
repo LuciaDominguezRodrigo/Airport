@@ -15,7 +15,6 @@ void movingLightsLoad();
 void staticLightsLoad();
 void drawEntorno(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M);
-void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M);
 void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M);
@@ -35,9 +34,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Model jetBody;
    Model jetWings;
    Model fence;
-   Model cube;
    Model torre1;
-   Model torre2;
    Model cone;
    Model antena;
    Model cubeTerminal;
@@ -54,11 +51,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 // Imagenes (texturas)
    Texture imgNoEmissive;
-   Texture imgMiddleEmissive;
 
-   Texture imgWindow;
-
-   Texture imgGround;
+   Texture imgGround; //Imagen de fondo
    Texture imgSkyDay;
    Texture imgSkyNight;
    Texture imgClouds;
@@ -73,11 +67,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
    Texture trackSpecular;
    Texture trackNormal;
 
-   Texture floorDiffuse;
+   Texture floorDiffuse; //Suelo de terminal
    Texture floorSpecular;
    Texture floorNormal;
 
-   Texture grassDiffuse;
+   Texture grassDiffuse; //Suelo de cesped
    Texture grassSpecular;
    Texture grassNormal;
 
@@ -93,7 +87,7 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
    Texture imgGlass;
 
-   Texture metAntenaDiffuse;
+   Texture metAntenaDiffuse; //Metal de los flaps
    Texture metAntenaNormal;
    Texture metAntenaSpecular;
 
@@ -103,8 +97,6 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
    Texture ruedasDiffuse;
    Texture ruedasNormal;
-
-   Texture flapsDiffuse;
 
 
 // Luces y materiales
@@ -158,8 +150,8 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 
 //Variables auxiliares temporales para control de cámara
     float x   = 0.0;
-    float y =  6.0;
-    float z =  -6.0;
+    float y =  0.0;
+    float z =  0.0;
 
 //Angulo de rotacion de las ruedas del avion
     float wheelRotAngle = 0.0;
@@ -169,8 +161,11 @@ void funCursorPos      (GLFWwindow* window, double xpos, double ypos);
 //Movimiento del tren de aterrizaje
     int contador = 0;
     bool gearUp = false;
+
+//Movimiento de flaps
     bool flapsUp = false;
     float actualTime;
+    bool mouseMovement = true;
 
 int main() {
 
@@ -241,7 +236,6 @@ void configScene() {
     jetWings.initModel("resources/models/planes/alas.obj");
     fence.initModel("resources/models/sceneParts/fence.obj");
     torre1.initModel("resources/models/geometric/cylinder.obj");
-    torre2.initModel("resources/models/geometric/cylinder.obj");
     cone.initModel("resources/models/geometric/cone.obj");
     antena.initModel("resources/models/sceneParts/antena.obj");
     sofa.initModel("resources/models/sceneParts/sofa.obj");
@@ -257,9 +251,6 @@ void configScene() {
 
     // Imagenes (texturas)
     imgNoEmissive.initTexture("resources/textures/imgNoEmissive.png");
-    imgMiddleEmissive.initTexture("resources/textures/imgMiddleEmissive.png");
-
-    imgWindow.initTexture("resources/textures/imgWindow.png");
 
     imgGround.initTexture("resources/textures/fondoSinCielo.png");
     imgSkyDay.initTexture("resources/textures/14.png"); //Color del cielo en función propia (prueba)
@@ -307,8 +298,6 @@ void configScene() {
     ruedasDiffuse.initTexture("resources/textures/tire01.png");
     ruedasNormal.initTexture("resources/textures/tireN01.png");
 
-    flapsDiffuse.initTexture("resources/textures/jetFlapsDiffuse.png");
-
     staticLightsLoad();
 
     // Luces posicionales
@@ -337,7 +326,7 @@ void configScene() {
     lightP[2].c2          = 0.20;
 
 
-    // Luces focales
+    // Luces focales (dentro de la terminal)
     lightF[0].position    = glm::vec3(-18.0, 7.8, 10.1);
     lightF[0].direction   = glm::vec3(-18.0, 0.0, 10.1) - lightF[0].position;
     lightF[0].ambient     = glm::vec3( 0.2,  0.2,  0.2);
@@ -367,7 +356,7 @@ void configScene() {
     mSol.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
     mSol.diffuse   = glm::vec4(0.0, 0.0, 0.0, 1.0);
     mSol.specular  = glm::vec4(0.0, 0.0, 0.0, 1.0);
-    mSol.emissive  = glm::vec4(0.2, 0.2, 0.2, 1.0);
+    mSol.emissive  = glm::vec4(0.5, 0.5, 0.5, 1.0);
     mSol.shininess = 1.0;
 
     mluz.ambient   = glm::vec4(0.0, 0.0, 0.0, 1.0);
@@ -381,12 +370,6 @@ void configScene() {
     mFrame.specular  = glm::vec4(0.508273f, 0.508273f, 0.508273f, 1.0f);
     mFrame.emissive  = glm::vec4(0.0, 0.0, 0.0, 1.0);
     mFrame.shininess = 51.2f;
-
-    texWindow.diffuse   = imgWindow.getTexture();
-    texWindow.specular  = imgWindow.getTexture();
-    texWindow.emissive  = imgNoEmissive.getTexture();
-    texWindow.normal    = 0;
-    texWindow.shininess = 10.0;
 
     texAsphalt.diffuse    = asphaltDiffuse.getTexture();
     texAsphalt.specular   = asphaltSpecular.getTexture();
@@ -484,12 +467,6 @@ void configScene() {
     texRuedas.normal = 0;
     texRuedas.shininess  = 51.2;
 
-    texFlaps.diffuse = flapsDiffuse.getTexture();
-    texFlaps.specular = flapsDiffuse.getTexture();
-    texFlaps.emissive = imgNoEmissive.getTexture();
-    texFlaps.normal = 0;
-    texFlaps.shininess  = 51.2;
-
 }
 
 void renderScene() {
@@ -511,11 +488,12 @@ void renderScene() {
     glm::mat4 P = glm::perspective(glm::radians(fovy), aspect, nplane, fplane);
 
  // Matriz V
-    //Restauración de movimiento orbital original: quitar las variables globales xCenter, yCenter, zCenter
-    //float x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
-    //float y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
-    //float z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
-    glm::vec3 eye   (x, y, z); //Cambiar por (x, y, z)
+    if(mouseMovement){
+        x = (6.0f*glm::cos(glm::radians(alphaY))*glm::sin(glm::radians(alphaX)));
+        y = 3.0f + (6.0f*glm::sin(glm::radians(alphaY)));
+        z = 6.0f*glm::cos(glm::radians(alphaY))*glm::cos(glm::radians(alphaX));
+    }
+    glm::vec3 eye   (x, y, z);
     glm::vec3 center(0.0, 0.0, 0.0);
     glm::vec3 up    (0.0, 1.0,  0.0);
     glm::mat4 V = glm::lookAt(eye, center, up);
@@ -525,14 +503,13 @@ void renderScene() {
     setLights(P,V);
 
  // Dibujamos la escena
-    glm::mat4 M = I; //Sustituir I por producto de matrices en caso de necesidad de movimiento global de la escena
+    glm::mat4 M = I;
 
     glm::mat4 S = glm::scale(I, glm::vec3(0.4, 0.5, 0.4));
     glm::mat4 T = glm::translate(I, glm::vec3(-7.5, 0.00, -10.0));
 
     drawEntorno(P, V, M);
     drawAvion(P, V, M);
-    drawVentanas(P, V, M);
     drawTorreControl(P,V,M * T * S);
     drawTerminal(P,V,M);
 
@@ -612,8 +589,8 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
     glm::mat4 RRuedas = glm::rotate   (I, glm::radians(wheelRotAngle), glm::vec3(1, 0, 0));
 
-    //timmer antena
-    float rotationSpeedMillis = 2.0f / 5.0f;  // 2 degrees every 10 milliseconds
+    //timer turbina
+    float rotationSpeedMillis = 2.0f / 5.0f;  // 2 degrees every 5 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
     glm::mat4 RHelice = glm::rotate   (I, rotationAngle, glm::vec3(0,0,1));
 
@@ -630,7 +607,7 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
             actualTime = glfwGetTime();
             contador = 0;
         }
-        float rotationSpeedMillis = 2.0f / 25.0f;  // 2 degrees every 10 milliseconds
+        float rotationSpeedMillis = 2.0f / 25.0f;  // 2 degrees every 25 milliseconds
         float rotationAngle = glm::radians(fmod((glfwGetTime()-actualTime) * rotationSpeedMillis * 1000.0f, 105.0f));
         if(rotationAngle >= 1.8f){
             contador += 1;
@@ -650,7 +627,7 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
             actualTime = glfwGetTime();
             contador = 0;
         }
-        float rotationSpeedMillis = 2.0f / 25.0f;  // 2 degrees every 10 milliseconds
+        float rotationSpeedMillis = 2.0f / 25.0f;  // 2 degrees every 25 milliseconds
         float rotationAngle = glm::radians(fmod((glfwGetTime()-actualTime) * rotationSpeedMillis * 1000.0f, 105.0f));
         if(rotationAngle <= 0.2f){
             contador += 1;
@@ -696,14 +673,6 @@ void drawAvion(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(plane, texMetalverde ,P, V, M * TFlapsInv * RFlaps2Inv * RFlaps1Inv * TAux2Flaps * RAuxFlaps * TAux1Flaps * SFlaps);
 }
 
-
-void drawVentanas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 Rv = glm::rotate   (I, glm::radians(90.0f), glm::vec3(1,0,0));
-    glm::mat4 Tv = glm::translate(I, glm::vec3(0.0, 0.0, 3.0));
-    glDepthMask(GL_FALSE);
-    //drawObjectTex(plane, texWindow, P, V, M * Tv * Rv);
-    glDepthMask(GL_TRUE);
-}
 
 void drawVallas(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 S = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));
@@ -767,13 +736,13 @@ void drawCielo(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     drawObjectTex(sphere, texGround, P, V, M * T * S1); //Esfera que contiene al fondo de vegetación
     glDepthMask(GL_TRUE);
 
-    glm::mat4 MSol = glm::translate(I,glm::vec3(0.0, 17.0, 29.0)) * glm::scale(I,glm::vec3(0.3)); //No es ninguna luz, sino únicamente una esfera simulando el sol
+    glm::mat4 MSol = glm::translate(I,glm::vec3(0.0, 17.0, 29.0)) * glm::scale(I,glm::vec3(0.3)); //No es ninguna luz, sino únicamente una esfera simulando el sol y la luna
     drawObjectMat(sphere, mSol, P, V, MSol);
 }
 
 void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-    glm::mat4 S1 = glm::scale    (I, glm::vec3(2.0, 7.0, 2.0)); //para que no aparezca por debajo, el número de la y
-    glm::mat4 T1 = glm::translate(I, glm::vec3(-16.0, 7.0, -10.0)); // tiene que coincidir en las dos matrices
+    glm::mat4 S1 = glm::scale    (I, glm::vec3(2.0, 7.0, 2.0));
+    glm::mat4 T1 = glm::translate(I, glm::vec3(-16.0, 7.0, -10.0));
     drawObjectTex(torre1, texConcrete, P, V, M * T1 * S1);
 
     glm::mat4 S3 = glm::scale    (I, glm::vec3(4.0, 2.0, 4.0));
@@ -782,7 +751,7 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
     //timmer antena
-    float rotationSpeedMillis = 2.0f / 100.0f;  // 2 degrees every 10 milliseconds
+    float rotationSpeedMillis = 2.0f / 100.0f;  // 2 degrees every 100 milliseconds
     float rotationAngle = glm::radians(fmod(glfwGetTime() * rotationSpeedMillis * 1000.0f, 360.0f));
 
     glm::mat4 SRotateAntena = glm::rotate(I, rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -807,32 +776,31 @@ void drawTorreControl (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
-    glm::mat4 SSofa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 SSofa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));
     glm::mat4 TSofa = glm::translate(I, glm::vec3(-22.0, -0.20, 17.90));
-    glm::mat4 RSofa = glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    glm::mat4 RSofa = glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
     drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa * SSofa * RSofa);
 
     glm::mat4 TSofa1 = glm::translate(I, glm::vec3(-22.0, -0.20, 2));
     drawObjectTex(sofa, texTelaSofa, P, V, M * TSofa1 * SSofa * RSofa);
 
-    glm::mat4 SSilla = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 SSilla = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));
     glm::mat4 TSilla = glm::translate(I, glm::vec3(-20.0, 1, 10));
-    glm::mat4 RSilla= glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    glm::mat4 RSilla= glm::rotate(I, glm::radians(90.0f), glm::vec3(0.0, 1.0, 0.0));
     drawObjectTex(chair, texTelaSofa, P, V, M * TSilla * SSilla * RSilla);
 
-    glm::mat4 SSilla2 = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 SSilla2 = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));
     glm::mat4 TSilla2 = glm::translate(I, glm::vec3(-20.0, 1, 7));
-    glm::mat4 RSilla2= glm::rotate(I, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
+    glm::mat4 RSilla2= glm::rotate(I, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));
     drawObjectTex(chair, texTelaSofa, P, V, M * TSilla2 * SSilla2 * RSilla2);
 
 
-    glm::mat4 SMesa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));  // Reducir el tamaño del sofá
+    glm::mat4 SMesa = glm::scale(I, glm::vec3(0.5, 0.5, 0.5));
     glm::mat4 TMesa = glm::translate(I, glm::vec3(-20.0, 1, 8.5));
-    //glm::mat4 RMesa= glm::rotate(I, glm::radians(-90.0f), glm::vec3(0.0, 1.0, 0.0));  // Rotar 90 grados a la izquierda
-    drawObjectTex(table, texTelaSofa, P, V, M * TMesa * SMesa );
+    drawObjectTex(table, texTelaSofa, P, V, M * TMesa * SMesa);
 
 
-    glm::mat4 SFrame1 = glm::scale(I, glm::vec3(0.1, 0.181, 0.095));  // Reducir el tamaño del sofá
+    glm::mat4 SFrame1 = glm::scale(I, glm::vec3(0.1, 0.181, 0.095));
     glm::mat4 Tframe;
     float initialDesZ = 18.15;
     for(int i=1; i<=5; i++){
@@ -847,7 +815,7 @@ void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
         initialDesZ -= 4.0;
     }
 
-    glm::mat4 SFrame2 = glm::scale(I, glm::vec3(0.114, 0.181, 0.095));  // Reducir el tamaño del sofá
+    glm::mat4 SFrame2 = glm::scale(I, glm::vec3(0.114, 0.181, 0.095));
     float initialDesX = -15.45;
     for(int i=1; i<=2; i++){
         Tframe = glm::translate(I, glm::vec3(initialDesX, 4.201, 0.0));
@@ -871,7 +839,7 @@ void drawTerminal (glm::mat4 P, glm::mat4 V, glm::mat4 M) {
     glm::mat4 STerminal2 = glm::scale(I, glm::vec3(5.0, 4.0, 10.0));
     glm::mat4 TTerminal2 = glm::translate(I, glm::vec3(-18.0, 3.995, 10.0));
     glDepthMask(GL_FALSE);
-    drawObjectTex(cubeTerminal, texGlass, P, V, M * TTerminal2 * STerminal2);
+    drawObjectTex(cubeTerminal, texGlass, P, V, M * TTerminal2 * STerminal2); //Vidrio de la terminal
     glDepthMask(GL_TRUE);
 
 }
@@ -886,15 +854,15 @@ void setLights(glm::mat4 P, glm::mat4 V) {
     for(int i=0; i<NLP; i++) {
         glm::mat4 M;
         if(i == 3){
-            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.025));
+            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.025)); //Luz situada en el morro del avión
         } else{
-            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1));
+            M = glm::translate(I,lightP[i].position) * glm::scale(I,glm::vec3(0.1)); //Luces de las farolas
         }
         drawObjectMat(sphere, mluz, P, V, M);
     }
 
     for(int i=0; i<NLF; i++) {
-        glm::mat4 M = glm::translate(I,lightF[i].position) * glm::scale(I,glm::vec3(0.025));
+        glm::mat4 M = glm::translate(I,lightF[i].position) * glm::scale(I,glm::vec3(0.025)); //Focos de la terminal
         drawObjectMat(sphere, mluz, P, V, M);
     }
 
@@ -939,7 +907,6 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
     switch(key) {
         //Controles del avion
         case GLFW_KEY_I:
-            //desZ += desZ > -20.6f ? 0.1f : 0.0f;
             wheelRotAngle += 45.0f;
 
             if(planeRotAngle == 90.0f){
@@ -971,6 +938,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
                 desX += 1.0f;
             }
         break;
+
         case GLFW_KEY_J:
             wheelRotAngle -= 45.0f;
             if(action == GLFW_PRESS) {
@@ -980,6 +948,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
                 planeRotAngle = 0.0f;
             }
             break;
+
         case GLFW_KEY_L:
             wheelRotAngle -= 45.0f;
             if(action == GLFW_PRESS) {
@@ -990,7 +959,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
             break;
 
-        //Auxiliar
+        //Auxiliar: Movimiento libre por el mundo
         case GLFW_KEY_W:  y += 1.0f;   break;
         case GLFW_KEY_S:  y -= 1.0f;   break;
         case GLFW_KEY_A:  x -= 1.0f;   break;
@@ -1007,6 +976,7 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
             break;
 
+        //Subir / Bajar el tren de aterrizaje
         case GLFW_KEY_G:
             if(action == GLFW_PRESS){
                 gearUp = !gearUp;
@@ -1015,11 +985,21 @@ void funKey(GLFWwindow* window, int key  , int scancode, int action, int mods) {
             }
             break;
 
+        //Subir / Bajar los flaps
         case GLFW_KEY_F:
             if(action == GLFW_PRESS){
                 flapsUp = !flapsUp;
             } else{
                 flapsUp = flapsUp;
+            }
+            break;
+
+        //Alternar entre movimiento orbital con el ratón o movimiento libre con las teclas
+        case GLFW_KEY_M:
+            if(action == GLFW_PRESS){
+                mouseMovement = !mouseMovement;
+            } else{
+                mouseMovement = mouseMovement;
             }
             break;
     }
